@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACS_BlazorView", "ACS_BlazorView\ACS_BlazorView.csproj", "{60464EC8-418F-4C7D-8873-88D6AD7D6789}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACS_API", "ACS_API\ACS_API.csproj", "{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{FCA31C5E-1D40-44AE-9AAE-257977854984}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60464EC8-418F-4C7D-8873-88D6AD7D6789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60464EC8-418F-4C7D-8873-88D6AD7D6789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60464EC8-418F-4C7D-8873-88D6AD7D6789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60464EC8-418F-4C7D-8873-88D6AD7D6789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCA31C5E-1D40-44AE-9AAE-257977854984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCA31C5E-1D40-44AE-9AAE-257977854984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCA31C5E-1D40-44AE-9AAE-257977854984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCA31C5E-1D40-44AE-9AAE-257977854984}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68C155C0-38ED-4DCA-9B9F-B969368A91D0}
+	EndGlobalSection
+EndGlobal
