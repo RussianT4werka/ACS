@@ -86,7 +86,7 @@ class Program
 
                                 await botClient.SendTextMessageAsync(
                                 chatId: message.Chat.Id,
-                                text: offender.Name);
+                                text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
                             }
 
                         }
