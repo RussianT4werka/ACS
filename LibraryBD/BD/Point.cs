@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ACS_API.DB;
+namespace LibraryBD.BD;
 
 public partial class Point
 {

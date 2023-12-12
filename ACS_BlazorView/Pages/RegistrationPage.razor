@@ -1,11 +1,14 @@
-﻿@page "/"
+﻿@page "/registration"
+@using ACS_API.Model;
 @using ACS_BlazorView.Data;
+@using Microsoft.AspNetCore.Mvc.Razor;
+@using static ACS_BlazorView.Pages.Index;
+@inject AuthenticationStateProvider auth;
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
-@inject AuthenticationStateProvider auth;
 @inject NavigationManager nav;
 
-<PageTitle>Авторизация</PageTitle>
+<PageTitle>Регистрация</PageTitle>
 
 <style>
     .ali {
@@ -14,58 +17,50 @@
     }
 </style>
 
-<EditForm class="ali" Model="@userData" OnSubmit="Auth">
-    <h1 style="margin-bottom: 10%">Авторизация</h1>
+<EditForm class="ali" Model="@userData" OnSubmit="Reg">
+    <h1 style="margin-bottom: 10%">Регистрация</h1>
     <h4>Логин</h4>
     <p>
         <InputText id="login" @bind-Value="userData.Login" />
     </p>
+
     <h4>Пароль</h4>
     <p>
         <InputText id="pass" @bind-Value="userData.Password" />
     </p>
 
+    <h4>Email</h4>
+    <p>
+        <InputText id="email" @bind-Value="userData.Email" />
+    </p>
+
     <p>
         <label style="color: red">@message</label>
     </p>
-
+    
     <p>
-        <button class="btn btn-success" type="submit">Авторизация</button>
-        <a class="btn btn-primary" href="registration">Регистрация</a>
+        <a class="btn btn-primary" href="/">Назад</a>
+        <button class="btn btn-success" type="submit">Зарегистрироваться</button>
     </p>
     
 </EditForm>
-
-
-
 @code {
-    UserData userData = new();
+    Index.UserData userData = new();
     string message = "";
-    async Task Auth()
+    async Task Reg()
     {
         var answer = await httpclient.PostAsJsonAsync(
-            "Users/Authorization", userData);
+            "Users/Registration", userData);
         if (answer.StatusCode == System.Net.HttpStatusCode.OK)
         {
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/AboutUser");
+            nav.NavigateTo("/AboutUser");   
         }
         else
         {
             message = await answer.Content.ReadAsStringAsync();
         }
-    }
-
-    public class UserData
-    {
-        public int? Id { get; set; }
-        public string? Surname { get; set; }
-        public string? Name { get; set; }
-        public string? Patronymic { get; set; }
-        public string? Login { get; set; }
-        public string? Password { get; set; }
-        public string? Email { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ACS_API.DB;
+namespace LibraryBD.BD;
 
 public partial class Offender
 {
@@ -16,4 +16,8 @@ public partial class Offender
     public string? W26 { get; set; }
 
     public string? Hex { get; set; }
+
+    public DateTime? Time { get; set; }
+
+    public byte? SendOrNot { get; set; }
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ACS_API\ACS_API.csproj" />
+    <ProjectReference Include="..\LibraryBD\LibraryBD.csproj" />
     <ProjectReference Include="..\TelegramBot\TelegramBot.csproj" />
   </ItemGroup>
 

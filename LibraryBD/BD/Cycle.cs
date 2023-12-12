@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TelegramBot.BD;
+namespace LibraryBD.BD;
 
 public partial class Cycle
 {

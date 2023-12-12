@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace ACS_API.DB;
+namespace LibraryBD.BD;
 
 public partial class AcsContext : DbContext
 {
+    private static AcsContext instance;
+
     public AcsContext()
     {
     }
@@ -33,7 +35,7 @@ public partial class AcsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=10.10.1.102;Database=ACS;Trusted_Connection=True;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;Trusted_Connection=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +43,7 @@ public partial class AcsContext : DbContext
         {
             entity.ToTable("Admin");
 
+            entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Login).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(100);
@@ -108,6 +111,8 @@ public partial class AcsContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Position).HasMaxLength(50);
+            entity.Property(e => e.SendOrNot).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Time).HasColumnType("datetime");
             entity.Property(e => e.W26)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -136,6 +141,10 @@ public partial class AcsContext : DbContext
             entity.ToTable("SubscriberTelegramBOT");
 
             entity.Property(e => e.ChatId).ValueGeneratedNever();
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.SubscribeOrNot).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Surname).HasMaxLength(50);
+            entity.Property(e => e.Username).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Translate>(entity =>
@@ -147,6 +156,15 @@ public partial class AcsContext : DbContext
         });
 
         OnModelCreatingPartial(modelBuilder);
+    }
+
+    public static AcsContext GetInstance()
+    {
+        if (instance == null)
+        {
+            instance = new AcsContext();
+        }
+        return instance;
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
