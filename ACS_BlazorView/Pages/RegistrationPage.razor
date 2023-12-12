@@ -49,8 +49,7 @@
     string message = "";
     async Task Reg()
     {
-        var answer = await httpclient.PostAsJsonAsync(
-            "Users/Registration", userData);
+        var answer = await httpclient.PostAsJsonAsync("Admins/Registration", userData);
         if (answer.StatusCode == System.Net.HttpStatusCode.OK)
         {
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());

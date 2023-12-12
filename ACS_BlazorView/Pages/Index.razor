@@ -44,7 +44,7 @@
     async Task Auth()
     {
         var answer = await httpclient.PostAsJsonAsync(
-            "Users/Authorization", userData);
+            "Admins/Authorization", userData);
         if (answer.StatusCode == System.Net.HttpStatusCode.OK)
         {
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());

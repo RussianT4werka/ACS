@@ -1,4 +1,3 @@
-
 using ACS_BlazorView.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -10,13 +9,14 @@ builder.Services.AddScoped<AuthenticationStateProvider,
     CustomAuthStateProvider>();
 builder.Services.AddScoped<SessionManager>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
-    AddCookie(opt => opt.Cookie.Name = "sample");
+    AddCookie(opt=>opt.Cookie.Name = "sample");
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddScoped(s => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:7123/api/")
+    BaseAddress = new Uri("https://localhost:7123/api/")
 });
 
 var app = builder.Build();
@@ -34,6 +34,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
