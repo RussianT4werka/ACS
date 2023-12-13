@@ -80,7 +80,7 @@ class Program
                         List<SubscriberTelegramBot> Subscribers = AcsContext.GetInstance().SubscriberTelegramBots.ToList();
                         foreach (var subscriber in Subscribers)
                         {
-                            if (offender.SendOrNot == 0)
+                            if (offender.SendOrNot == 0 && subscriber.SubscribeOrNot == 1)
                             {
                                 message.Chat.Id = subscriber.ChatId;
 

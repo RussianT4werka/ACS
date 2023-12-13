@@ -1,4 +1,12 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using static ACS_BlazorView.Pages.Index;
+@using ACS_BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject HttpClient httpclient;
+@inject SessionManager sessions;
+@inject ProtectedSessionStorage storage
+@inject AuthenticationStateProvider auth;
+@inject NavigationManager nav;
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">С К У Д</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -9,8 +17,10 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+        <CascadingAuthenticationState>
+        <AuthorizeView>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/IventsPage">
                 <span class="oi oi-bell" aria-hidden="true"></span> События
             </NavLink>
         </div>
@@ -20,24 +30,27 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
+            <NavLink class="nav-link" href="/ListOffendersPage">
                 <span class="oi oi-ban" aria-hidden="true"></span> Нарушители
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/TelegramBot">
+            <NavLink class="nav-link" href="/TelegramBotPage">
                 <span class="oi oi-paperclip" aria-hidden="true"></span> TelegramBOT
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="logout">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All" @onclick="LogOut">
                 <span class="oi oi-account-logout" aria-hidden="true"></span> Выйти
             </NavLink>
         </div>
+        </AuthorizeView>
+        </CascadingAuthenticationState>
     </nav>
 </div>
 
 @code {
+    UserData userData = new();
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -45,5 +58,13 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    async Task LogOut()
+    {
+        var session = await storage.GetAsync<string>("session");
+        sessions.Logout(session.Value);
+
+        ((CustomAuthStateProvider)auth).Logout();
+        nav.NavigateTo("/");
     }
 }

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\LibraryBD\LibraryBD.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\" />
+  </ItemGroup>
+
 </Project>

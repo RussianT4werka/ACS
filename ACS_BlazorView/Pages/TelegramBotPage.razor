@@ -1,6 +1,94 @@
-﻿@page "/TelegramBot"
-<h3>TelegramBotPage</h3>
+﻿@page "/TelegramBotPage"
+@using static ACS_BlazorView.Pages.Index;
+@using ACS_BlazorView.Data;
+@inject SessionManager manager;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject ProtectedSessionStorage storage
+@inject HttpClient httpclient;
+@inject SessionManager sessions;
+@inject AuthenticationStateProvider auth;
+@inject NavigationManager nav;
+<PageTitle>Настройки рассылки</PageTitle>
+<CascadingAuthenticationState>
+<AuthorizeView>
+    <h3>Список подписчиков</h3>
+    
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ChatID</th>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Username</th>
+                    <th>Вкл/выкл уведомления</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Subscriber sub in @Subscribers)
+                {
+                    <tr>
+                        <td>@sub.ChatId</td>
+                        <td>@sub.Name</td>
+                        <td>@sub.Surname</td>
+                        <td>@sub.Username</td>
+                        <td>
+                            <div class="form-check form-switch" @onclick="@(() => SubscribeOrNot(sub))">
+                                @if (sub.SubscribeOrNot == 0)
+                                {
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                    
+                                }
+                                else if (sub.SubscribeOrNot == 1)
+                                {
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</AuthorizeView>
+</CascadingAuthenticationState>
+
 
 @code {
+    UserData userData = new();
+    List<Subscriber> Subscribers = new();
+    string message = "";
 
+    protected override async Task OnInitializedAsync()
+    {
+        var session = await storage.GetAsync<string>("session");
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value!);
+            userData.Id = id;
+            Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>(
+            "SubscriberTelegramBots/GetSubscriberTelegramBots");
+        }
+        await base.OnInitializedAsync();
+    }
+
+    async Task SubscribeOrNot(Subscriber sub)
+    {
+        var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/SubscribeOrNot", sub);
+    }
+
+    public class Subscriber
+    {
+        public int? ChatId { get; set; }
+
+        public string? Name { get; set; }
+
+        public string? Surname { get; set; }
+
+        public string? Username { get; set; }
+
+        public byte? SubscribeOrNot { get; set; }
+    }
+    
+    
 }
+
