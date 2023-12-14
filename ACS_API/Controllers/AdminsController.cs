@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LibraryBD.BD;
 using ACS_API.Model;
 using ACS_API.Tools;
+using Humanizer;
 
 namespace ACS_API.Controllers
 {
@@ -86,5 +87,7 @@ namespace ACS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        
     }
 }

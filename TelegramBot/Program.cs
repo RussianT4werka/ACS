@@ -8,39 +8,27 @@ using Microsoft.IdentityModel.Tokens;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using LibraryBD.BD;
 using System.Collections.ObjectModel;
+using System.Net.Http.Json;
 
 class Program
 {
-    public static List<Offender> checkOffender { get; set; } = new List<Offender>();
-    static void Main(string[] args)
+    static HttpClient httpClient = new HttpClient();
+    static async Task Main(string[] args)
     {
         var client = new TelegramBotClient("6732493440:AAGgyzhTGhjzc5YVO07sIaCNb6ksbMA4gcU");
         client.StartReceiving(Update, Error);
         Console.ReadLine();
     }
 
-    private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
-    {
-        var ErrorMessage = exception switch
-        {
-            ApiRequestException apiRequestException
-                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-            _ => exception.ToString()
-        };
-
-        Console.WriteLine(ErrorMessage);
-        return Task.CompletedTask;
-    }
-
     async static Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
-        checkOffender = AcsContext.GetInstance().Offenders.ToList();
         SubscriberTelegramBot SubscriberTelegramBot;
         var message = update.Message;
 
         await botClient.SendTextMessageAsync(
         chatId: message.Chat.Id,
         text: message.Text);
+
         try
         {
             var findChatID = AcsContext.GetInstance().SubscriberTelegramBots.FirstOrDefault(s => s.ChatId == message.Chat.Id);
@@ -66,18 +54,18 @@ class Program
             Console.WriteLine("Ошибка подписки!");
             Console.ReadLine();
         }
-
         
         try
         {
             while (true)
             {
-                
+                List<Offender> checkOffender = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
                 if (checkOffender != null)
                 {
                     foreach (var offender in checkOffender)
                     {
-                        List<SubscriberTelegramBot> Subscribers = AcsContext.GetInstance().SubscriberTelegramBots.ToList();
+                        List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>> ("https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberTelegramBots");
+
                         foreach (var subscriber in Subscribers)
                         {
                             if (offender.SendOrNot == 0 && subscriber.SubscribeOrNot == 1)
@@ -90,21 +78,29 @@ class Program
                             }
 
                         }
-                        
-                        offender.SendOrNot = (byte)1;
-
-                        AcsContext.GetInstance().Update(offender);
-                        AcsContext.GetInstance().SaveChanges();
+                        var offenderSendApi = await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
                     }
                 }
                 
                 return;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            Console.WriteLine("Ошибка отправки нарушителя!");
+            Console.WriteLine($"{ex.Message}");
             Console.ReadLine();
         }
+    }
+    private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
+    {
+        var ErrorMessage = exception switch
+        {
+            ApiRequestException apiRequestException
+                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+            _ => exception.ToString()
+        };
+
+        Console.WriteLine(ErrorMessage);
+        return Task.CompletedTask;
     }
 }

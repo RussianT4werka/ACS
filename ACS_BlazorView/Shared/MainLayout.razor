@@ -1,5 +1,9 @@
 ﻿@inherits LayoutComponentBase
-
+@using ACS_BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject ProtectedSessionStorage storage
+@inject AuthenticationStateProvider auth;
+@inject SessionManager manager;
 <PageTitle>ACS_BlazorView</PageTitle>
 
 <div class="page">
@@ -17,3 +21,17 @@
         </article>
     </main>
 </div>
+@code 
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var session = await storage.GetAsync<string>("session");
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value);
+            if (id != null)
+                ((CustomAuthStateProvider)auth).AuthUser(session.Value, id.Value);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

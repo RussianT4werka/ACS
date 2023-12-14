@@ -55,19 +55,16 @@
 
 @code {
     UserData userData = new();
-    List<Subscriber> Subscribers = new();
     string message = "";
 
-    protected override async Task OnInitializedAsync()
+    private List<Subscriber> Subscribers = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var session = await storage.GetAsync<string>("session");
-        if (session.Success)
-        {
-            var id = manager.GetUserId(session.Value!);
-            userData.Id = id;
-            Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>(
+        GC.Collect();
+        Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>(
             "SubscriberTelegramBots/GetSubscriberTelegramBots");
-        }
+
         await base.OnInitializedAsync();
     }
 

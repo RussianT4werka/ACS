@@ -50,7 +50,7 @@
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/AboutUser");
+            nav.NavigateTo("/TelegramBotPage");
         }
         else
         {
