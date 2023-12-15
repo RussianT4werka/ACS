@@ -10,25 +10,45 @@ using LibraryBD.BD;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Net.Http;
+using NuGet.Common;
+using Update = Telegram.Bot.Types.Update;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 class Program
 {
     static HttpClient httpClient = new HttpClient();
+    private static List<Offender> ListOffenders { get; set; }
+
+    static ITelegramBotClient BotClient;
+    static Update Update;
+    static CancellationToken Token;
+
     static async Task Main(string[] args)
     {
+
         var client = new TelegramBotClient("6732493440:AAGgyzhTGhjzc5YVO07sIaCNb6ksbMA4gcU");
-        client.StartReceiving(Update, Error);
-        /*Thread newThread = new Thread(Cycle);
-        newThread.Start();*/
+        //client.StartReceiving(UpdateM, Error);
+
+        client.StartReceiving(CheckOffender, Error);
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+        while (await timer.WaitForNextTickAsync())
+        {
+
+            CheckOffender(BotClient, Update, Token);
+        }
+
+
         Console.ReadLine();
     }
     public static SubscriberTelegramBot ChatID { get; set; }
-    async static Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
+    async static Task UpdateM(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
+        
         SubscriberTelegramBot SubscriberTelegramBot;
         var message = update.Message;
-
-        try
+        
+        /*try
         {
             var chatID = Convert.ToInt32(message.Chat.Id);
             var check = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriber?id={chatID}");
@@ -54,14 +74,15 @@ class Program
         catch
         {
             return;
-        }
+        }*/
         
 
         try
         {
-            var findChatID = AcsContext.GetInstance().SubscriberTelegramBots.FirstOrDefault(s => s.ChatId == message.Chat.Id); //переделать в апи
+            
             if (!message.Text.IsNullOrEmpty())
             {
+                var findChatID = await httpClient.GetFromJsonAsync<SubscriberTelegramBot>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
                 if (message.Text.Contains("Хочу получать уведомления, 12345") && findChatID == null)
                 {
                     SubscriberTelegramBot = new SubscriberTelegramBot()
@@ -85,12 +106,11 @@ class Program
         
         try
         {
-            while (true)
-            {
-                List<Offender> checkOffender = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
-                if (checkOffender != null)
+            
+                
+                if (ListOffenders != null)
                 {
-                    foreach (var offender in checkOffender)
+                    foreach (var offender in ListOffenders)
                     {
                         List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>
                         ("https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberTelegramBots");
@@ -110,9 +130,14 @@ class Program
                         var offenderSendApi = await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
                     }
                 }
+                /*var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+                while (await timer.WaitForNextTickAsync())
+                {
+                    Update(botClient, update, token);
+                }*/
                 
-                return;
-            }
+            
+
         }
         catch (Exception ex)
         {
@@ -121,14 +146,31 @@ class Program
         }
     }
 
-    async void Cycle()
+    async static Task CheckOffender(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
-        while (true)
+        BotClient = botClient;
+        Update = update;
+        Token = token;
+        try
         {
-            
-            Thread.Sleep(1000);
+            ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
+            foreach(var offender in ListOffenders)
+            {
+                if(offender.SendOrNot == 0)
+                {
+                    await UpdateM(botClient, update, token);
+                }
+            }
         }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"{ex.Message}");
+            Console.ReadLine();
+        }
+        
+
     }
+    
     private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         var ErrorMessage = exception switch

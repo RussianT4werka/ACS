@@ -82,5 +82,22 @@ namespace ACS_API.Controllers
 
             return subscriberTelegramBot.SubscribeOrNot;
         }
+
+        [HttpGet("GetSubscriberCheckNull")]
+        public async Task<ActionResult<SubscriberTelegramBot>> GetSubscriberCheckNull(long id)
+        {
+            if (_context.SubscriberTelegramBots == null)
+            {
+                return NotFound();
+            }
+            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == (int)id);
+
+            if (subscriberTelegramBot == null)
+            {
+                return NotFound();
+            }
+
+            return subscriberTelegramBot;
+        }
     }
 }
