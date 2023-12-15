@@ -9,6 +9,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using LibraryBD.BD;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
+using System.Net.Http;
 
 class Program
 {
@@ -17,21 +18,48 @@ class Program
     {
         var client = new TelegramBotClient("6732493440:AAGgyzhTGhjzc5YVO07sIaCNb6ksbMA4gcU");
         client.StartReceiving(Update, Error);
+        /*Thread newThread = new Thread(Cycle);
+        newThread.Start();*/
         Console.ReadLine();
     }
-
+    public static SubscriberTelegramBot ChatID { get; set; }
     async static Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
         SubscriberTelegramBot SubscriberTelegramBot;
         var message = update.Message;
 
-        await botClient.SendTextMessageAsync(
-        chatId: message.Chat.Id,
-        text: message.Text);
+        try
+        {
+            var chatID = Convert.ToInt32(message.Chat.Id);
+            var check = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriber?id={chatID}");
+
+            if (check == 1)
+            {
+                if (message.Sticker == message.Sticker)
+                {
+                    await botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: "Ало");
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+        catch
+        {
+            return;
+        }
+        
 
         try
         {
-            var findChatID = AcsContext.GetInstance().SubscriberTelegramBots.FirstOrDefault(s => s.ChatId == message.Chat.Id);
+            var findChatID = AcsContext.GetInstance().SubscriberTelegramBots.FirstOrDefault(s => s.ChatId == message.Chat.Id); //переделать в апи
             if (!message.Text.IsNullOrEmpty())
             {
                 if (message.Text.Contains("Хочу получать уведомления, 12345") && findChatID == null)
@@ -64,7 +92,8 @@ class Program
                 {
                     foreach (var offender in checkOffender)
                     {
-                        List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>> ("https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberTelegramBots");
+                        List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>
+                        ("https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberTelegramBots");
 
                         foreach (var subscriber in Subscribers)
                         {
@@ -89,6 +118,15 @@ class Program
         {
             Console.WriteLine($"{ex.Message}");
             Console.ReadLine();
+        }
+    }
+
+    async void Cycle()
+    {
+        while (true)
+        {
+            
+            Thread.Sleep(1000);
         }
     }
     private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)

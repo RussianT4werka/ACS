@@ -65,5 +65,22 @@ namespace ACS_API.Controllers
                 return BadRequest($"{ex.Message}");
             }
         }
+
+        [HttpGet("GetSubscriber")]
+        public async Task<ActionResult<int?>> GetSubscriber(int id)
+        {
+            if (_context.SubscriberTelegramBots == null)
+            {
+                return NotFound();
+            }
+            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync( s => s.ChatId == id);
+
+            if (subscriberTelegramBot == null)
+            {
+                return NotFound();
+            }
+
+            return subscriberTelegramBot.SubscribeOrNot;
+        }
     }
 }
