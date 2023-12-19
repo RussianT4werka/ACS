@@ -22,8 +22,8 @@ namespace ACS_API.Controllers
         }
 
         // GET: api/SubscriberTelegramBots
-        [HttpGet("GetSubscriberTelegramBots")]
-        public async Task<ActionResult<IEnumerable<SubscriberTelegramBot>>> GetSubscriberTelegramBots()
+        [HttpGet("GetListSubscribers")]
+        public async Task<ActionResult<IEnumerable<SubscriberTelegramBot>>> GetListSubscribers()
         {
             try
             {
@@ -84,20 +84,42 @@ namespace ACS_API.Controllers
         }
 
         [HttpGet("GetSubscriberCheckNull")]
-        public async Task<ActionResult<SubscriberTelegramBot>> GetSubscriberCheckNull(long id)
+        public async Task<ActionResult<int>> GetSubscriberCheckNull(long id)
         {
-            if (_context.SubscriberTelegramBots == null)
+            try
             {
-                return NotFound();
-            }
-            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == (int)id);
+                if (_context.SubscriberTelegramBots == null)
+                {
+                    return NotFound();
+                }
+                var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == (int)id);
 
-            if (subscriberTelegramBot == null)
+                if (subscriberTelegramBot == null)
+                {
+                    return 0;
+                }
+
+                return 1;
+            }
+            catch (Exception ex) 
             {
-                return NotFound();
+                return BadRequest($"Метод для проверки пользователя в подписчиках выдал ошибку:{ex}");
             }
+        }
 
-            return subscriberTelegramBot;
+        [HttpPost("AddSubscriber")]
+        public async Task<ActionResult> AddSubscriber(SubscriberTelegramBot sub)
+        {
+            try
+            {
+                await _context.SubscriberTelegramBots.AddRangeAsync(sub);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                BadRequest(ex.Message);
+            }
+            return NoContent();
         }
     }
 }

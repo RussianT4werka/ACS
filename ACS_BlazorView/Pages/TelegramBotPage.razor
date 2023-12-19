@@ -63,7 +63,7 @@
     {
         GC.Collect();
         Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>(
-            "SubscriberTelegramBots/GetSubscriberTelegramBots");
+            "SubscriberTelegramBots/GetListSubscribers");
 
         await base.OnInitializedAsync();
     }

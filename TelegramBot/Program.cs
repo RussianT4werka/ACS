@@ -2,173 +2,112 @@
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
-using Telegram.Bot.Types;
-using System.Threading;
 using Microsoft.IdentityModel.Tokens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using LibraryBD.BD;
-using System.Collections.ObjectModel;
 using System.Net.Http.Json;
-using System.Net.Http;
-using NuGet.Common;
 using Update = Telegram.Bot.Types.Update;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 class Program
 {
-    static HttpClient httpClient = new HttpClient();
-    private static List<Offender> ListOffenders { get; set; }
-
     static ITelegramBotClient BotClient;
     static Update Update;
     static CancellationToken Token;
 
+    private static ReceiverOptions _receiverOptions;
+
+    private static TelegramBotClient client;
+
+    static HttpClient httpClient = new HttpClient();
+    private static List<SubscriberTelegramBot> ListSub { get; set; }
+    private static List<Offender> ListOffendersNotSend { get; set; }
+
     static async Task Main(string[] args)
     {
+        client = new TelegramBotClient("6732493440:AAGgyzhTGhjzc5YVO07sIaCNb6ksbMA4gcU");
 
-        var client = new TelegramBotClient("6732493440:AAGgyzhTGhjzc5YVO07sIaCNb6ksbMA4gcU");
-        //client.StartReceiving(UpdateM, Error);
-
-        client.StartReceiving(CheckOffender, Error);
+        _receiverOptions = new ReceiverOptions // Настройки бота
+        {
+            AllowedUpdates = new[] // Тут указываем типы получаемых Update`ов, о них подробнее расказано тут https://core.telegram.org/bots/api#update
+            {
+                UpdateType.Message, // Сообщения (текст, фото/видео, голосовые/видео сообщения и т.д.)
+            },
+            ThrowPendingUpdates = true,
+        };
+        client.StartReceiving(UpdateM, Error, _receiverOptions);
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
         while (await timer.WaitForNextTickAsync())
         {
-
-            CheckOffender(BotClient, Update, Token);
+            UpdateM(BotClient, Update, Token);
         }
 
-
+        await Task.Delay(-1);
         Console.ReadLine();
     }
-    public static SubscriberTelegramBot ChatID { get; set; }
     async static Task UpdateM(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
-        
+        ListSub = new();
+        ListOffendersNotSend = new();
         SubscriberTelegramBot SubscriberTelegramBot;
-        var message = update.Message;
-        
-        /*try
+        if (update != null)
         {
-            var chatID = Convert.ToInt32(message.Chat.Id);
-            var check = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriber?id={chatID}");
-
-            if (check == 1)
+            var message = update.Message;
+            var findChatID = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
+            if (!message.Text.IsNullOrEmpty() && message.Text.Contains("Хочу получать уведомления, 12345") && findChatID == 0)
             {
-                if (message.Sticker == message.Sticker)
+                SubscriberTelegramBot = new SubscriberTelegramBot()
                 {
-                    await botClient.SendTextMessageAsync(
-                    chatId: message.Chat.Id,
-                    text: "Ало");
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
+                    ChatId = (int)message.Chat.Id,
+                    Username = message.Chat.Username,
+                    Name = message.Chat.FirstName,
+                    Surname = message.Chat.LastName
+                };
+                await httpClient.PostAsJsonAsync("https://localhost:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
             }
         }
-        catch
-        {
-            return;
-        }*/
-        
 
         try
         {
-            
-            if (!message.Text.IsNullOrEmpty())
+            List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
+            foreach (var offender in ListOffenders)
             {
-                var findChatID = await httpClient.GetFromJsonAsync<SubscriberTelegramBot>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
-                if (message.Text.Contains("Хочу получать уведомления, 12345") && findChatID == null)
+                if (offender.SendOrNot == 0)
                 {
-                    SubscriberTelegramBot = new SubscriberTelegramBot()
-                    {
-                        ChatId = (int)message.Chat.Id,
-                        Username = message.Chat.Username,
-                        Name = message.Chat.FirstName,
-                        Surname = message.Chat.LastName
-                    };
-
-                    AcsContext.GetInstance().SubscriberTelegramBots.Add(SubscriberTelegramBot);
-                    AcsContext.GetInstance().SaveChanges();
+                    ListOffendersNotSend.Add(offender);
                 }
             }
-        }
-        catch
-        {
-            Console.WriteLine("Ошибка подписки!");
-            Console.ReadLine();
-        }
-        
-        try
-        {
-            
-                
-                if (ListOffenders != null)
+            if(ListOffendersNotSend != null && ListOffendersNotSend.Count > 0)
+            {
+                List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>("https://localhost:7123/api/SubscriberTelegramBots/GetListSubscribers");
+                foreach (var sub in Subscribers)
                 {
-                    foreach (var offender in ListOffenders)
+                    if (sub.SubscribeOrNot == 1)
                     {
-                        List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>
-                        ("https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberTelegramBots");
-
-                        foreach (var subscriber in Subscribers)
-                        {
-                            if (offender.SendOrNot == 0 && subscriber.SubscribeOrNot == 1)
-                            {
-                                message.Chat.Id = subscriber.ChatId;
-
-                                await botClient.SendTextMessageAsync(
-                                chatId: message.Chat.Id,
-                                text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
-                            }
-
-                        }
-                        var offenderSendApi = await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
+                        ListSub.Add(sub);
                     }
                 }
-                /*var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
-                while (await timer.WaitForNextTickAsync())
-                {
-                    Update(botClient, update, token);
-                }*/
-                
-            
 
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"{ex.Message}");
-            Console.ReadLine();
-        }
-    }
-
-    async static Task CheckOffender(ITelegramBotClient botClient, Update update, CancellationToken token)
-    {
-        BotClient = botClient;
-        Update = update;
-        Token = token;
-        try
-        {
-            ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
-            foreach(var offender in ListOffenders)
-            {
-                if(offender.SendOrNot == 0)
+                foreach (var offender in ListOffendersNotSend)
                 {
-                    await UpdateM(botClient, update, token);
+                    foreach (var sub in ListSub)
+                    {
+                        await client.SendTextMessageAsync(
+                        chatId: sub.ChatId,
+                        text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
+                        Console.WriteLine($"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"");
+                    }
+                    await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
                 }
+
+                Console.WriteLine($"Отправлено {ListSub.Count()} подписчикам.");
+                
             }
         }
         catch(Exception ex)
         {
-            Console.WriteLine($"{ex.Message}");
+            Console.WriteLine($"Ошибка : {ex}");
             Console.ReadLine();
         }
-        
-
     }
     
     private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
