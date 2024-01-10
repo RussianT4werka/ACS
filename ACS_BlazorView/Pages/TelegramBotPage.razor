@@ -11,7 +11,21 @@
 <PageTitle>Настройки рассылки</PageTitle>
 <CascadingAuthenticationState>
 <AuthorizeView>
-    <h3>Список подписчиков</h3>
+    <nav class="navbar">
+        <div class="container-fluid">
+        <h3>Список подписчиков</h3>
+            <button type="button" class="btn btn-primary">Логи *в разработке*</button>
+
+        </div>
+    </nav>
+   <style>
+            .container-fluid {
+                background-color: #ff7300;
+            }
+            .navbar{
+                background-color: #ff7300;
+            }
+   </style>
     
         <table class="table">
             <thead>
@@ -20,7 +34,8 @@
                     <th>Имя</th>
                     <th>Фамилия</th>
                     <th>Username</th>
-                    <th>Вкл/выкл уведомления</th>
+                    <th>Уведомления</th>
+                    <th></th>
                 </tr>
             </thead>
 
@@ -36,18 +51,21 @@
                             <div class="form-check form-switch" @onclick="@(() => SubscribeOrNot(sub))">
                                 @if (sub.SubscribeOrNot == 0)
                                 {
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                    <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault">
                                     
                                 }
                                 else if (sub.SubscribeOrNot == 1)
                                 {
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked>
+                                    <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault" checked>
                                 }
                             </div>
                         </td>
+                        <td>
+                            <a class="btn btn-danger" @onclick="@(() => DeleteSub(sub))">🗑️</a>
+                        </td>
                     </tr>
                 }
-            </tbody>
+            </tbody>    
         </table>
 </AuthorizeView>
 </CascadingAuthenticationState>
@@ -62,8 +80,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         GC.Collect();
-        Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>(
-            "SubscriberTelegramBots/GetListSubscribers");
+        Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
 
         await base.OnInitializedAsync();
     }
@@ -73,9 +90,14 @@
         var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/SubscribeOrNot", sub);
     }
 
+    async Task DeleteSub(Subscriber sub)
+    {
+        var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/DelSubscriber", sub);
+    }
+
     public class Subscriber
     {
-        public int? ChatId { get; set; }
+        public string? ChatId { get; set; }
 
         public string? Name { get; set; }
 

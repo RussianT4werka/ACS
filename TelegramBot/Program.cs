@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using LibraryBD.BD;
 using System.Net.Http.Json;
 using Update = Telegram.Bot.Types.Update;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
+using System;
 
 class Program
 {
@@ -49,25 +52,68 @@ class Program
         ListSub = new();
         ListOffendersNotSend = new();
         SubscriberTelegramBot SubscriberTelegramBot;
-        if (update != null)
-        {
-            var message = update.Message;
-            var findChatID = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
-            if (!message.Text.IsNullOrEmpty() && message.Text.Contains("Хочу получать уведомления, 12345") && findChatID == 0)
-            {
-                SubscriberTelegramBot = new SubscriberTelegramBot()
-                {
-                    ChatId = (int)message.Chat.Id,
-                    Username = message.Chat.Username,
-                    Name = message.Chat.FirstName,
-                    Surname = message.Chat.LastName
-                };
-                await httpClient.PostAsJsonAsync("https://localhost:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
-            }
-        }
-
         try
         {
+            if (update != null && update.Message.Text == "/start")
+            {
+                // Тут создаем нашу клавиатуру
+                var inlineKeyboard = new InlineKeyboardMarkup(
+                new List<InlineKeyboardButton[]>()
+                {
+                    new InlineKeyboardButton[] // тут создаем массив кнопок
+                    {
+                        InlineKeyboardButton.WithUrl("Сайт компании", "https://safecity.pro/"),
+                    }
+                });
+                await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"Привет {update.Message.Chat.Username}!", replyMarkup: inlineKeyboard); // Все клавиатуры передаются в параметр replyMarkup
+
+                var replyKeyboard = new ReplyKeyboardMarkup(
+                                    new List<KeyboardButton[]>()
+                                    {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Хочу получать уведомления!"),
+                                            //new KeyboardButton("Пока!"),
+                                        }
+                                    })
+                {
+                    // автоматическое изменение размера клавиатуры, если не стоит true,
+                    // тогда клавиатура растягивается чуть ли не до луны,
+                    // проверить можете сами
+                    ResizeKeyboard = true,
+                };
+
+                await botClient.SendTextMessageAsync(
+                    update.Message.Chat.Id, "Пиши \"Хочу получать уведомления\" если хочешь получать уведмления)", replyMarkup: replyKeyboard); // опять передаем клавиатуру в параметр replyMarkup
+
+                return;
+            }
+
+        
+            if (update != null)
+            {
+                var message = update.Message;
+                var findChatID = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
+                if (!message.Text.IsNullOrEmpty() && message.Text.Contains("Хочу получать уведомления") && findChatID == 0 || findChatID == 0)
+                {
+                    string stringChatId = Convert.ToString(message.Chat.Id);
+                    SubscriberTelegramBot = new SubscriberTelegramBot()
+                    {
+                        ChatId = stringChatId,
+                        Username = message.Chat.Username,
+                        Name = message.Chat.FirstName,
+                        Surname = message.Chat.LastName
+                    };
+                    await httpClient.PostAsJsonAsync("https://localhost:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"{update.Message.Chat.Username}, подписал вас на уведомления. Нужно только согласовать с администратором");
+                }
+                else
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"{update.Message.Chat.Username}, вы уже подписаны на уведомления");
+                }
+            }
+
+        
             List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
             foreach (var offender in ListOffenders)
             {
@@ -94,28 +140,28 @@ class Program
                         await client.SendTextMessageAsync(
                         chatId: sub.ChatId,
                         text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
-                        Console.WriteLine($"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"");
+                        Console.WriteLine($"{DateTime.Now} - Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"");
                     }
                     await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
                 }
 
-                Console.WriteLine($"Отправлено {ListSub.Count()} подписчикам.");
+                Console.WriteLine($"{DateTime.Now} - Отправлено {ListSub.Count()} подписчикам.");
                 
             }
         }
         catch(Exception ex)
         {
-            Console.WriteLine($"Ошибка : {ex}");
+            Console.WriteLine($"{DateTime.Now} - Ошибка : {ex}");
             Console.ReadLine();
         }
     }
-    
+
     private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
     {
         var ErrorMessage = exception switch
         {
             ApiRequestException apiRequestException
-                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                => $"{DateTime.Now} - Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
 

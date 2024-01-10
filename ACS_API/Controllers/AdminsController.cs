@@ -31,11 +31,14 @@ namespace ACS_API.Controllers
                 if (string.IsNullOrWhiteSpace(user.Login) ||
                     string.IsNullOrWhiteSpace(user.Password) ||
                     string.IsNullOrWhiteSpace(user.Email))
-                    return BadRequest("Мало данных. Введите еще.");
+                    return BadRequest("Не все поля заполнены.");
 
-                var checkUser = await _context.Admins.AnyAsync(s => s.Email == user.Email);
-                if (checkUser)
-                    return BadRequest("Email уже используется. Мб это твой? Восстанови сам");
+                var checkUserEmail = await _context.Admins.AnyAsync(s => s.Email == user.Email);
+                var checkUserLogin = await _context.Admins.AnyAsync(s => s.Login == user.Login);
+                if (checkUserEmail)
+                    return BadRequest("Email уже используется.");
+                if (checkUserLogin)
+                    return BadRequest("Логин уже используется");
 
                 string hashPass = Hash.HashPassword(user);
 

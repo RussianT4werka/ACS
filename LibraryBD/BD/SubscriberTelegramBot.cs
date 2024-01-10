@@ -5,7 +5,7 @@ namespace LibraryBD.BD;
 
 public partial class SubscriberTelegramBot
 {
-    public int ChatId { get; set; }
+    public string ChatId { get; set; }
 
     public string? Name { get; set; }
 

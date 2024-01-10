@@ -47,7 +47,7 @@ namespace ACS_API.Controllers
                 var sub = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == data.ChatId);
                 if (sub == null)
                     return NotFound();
-                if(sub.SubscribeOrNot == 0)
+                if (sub.SubscribeOrNot == 0)
                 {
                     sub.SubscribeOrNot = 1;
                 }
@@ -67,13 +67,13 @@ namespace ACS_API.Controllers
         }
 
         [HttpGet("GetSubscriber")]
-        public async Task<ActionResult<int?>> GetSubscriber(int id)
+        public async Task<ActionResult<int?>> GetSubscriber(string id)
         {
             if (_context.SubscriberTelegramBots == null)
             {
                 return NotFound();
             }
-            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync( s => s.ChatId == id);
+            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == id);
 
             if (subscriberTelegramBot == null)
             {
@@ -84,7 +84,7 @@ namespace ACS_API.Controllers
         }
 
         [HttpGet("GetSubscriberCheckNull")]
-        public async Task<ActionResult<int>> GetSubscriberCheckNull(long id)
+        public async Task<ActionResult<long>> GetSubscriberCheckNull(long id)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace ACS_API.Controllers
                 {
                     return NotFound();
                 }
-                var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == (int)id);
+                var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == Convert.ToString(id));
 
                 if (subscriberTelegramBot == null)
                 {
@@ -101,7 +101,7 @@ namespace ACS_API.Controllers
 
                 return 1;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest($"Метод для проверки пользователя в подписчиках выдал ошибку:{ex}");
             }
@@ -115,9 +115,24 @@ namespace ACS_API.Controllers
                 await _context.SubscriberTelegramBots.AddRangeAsync(sub);
                 await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+
+        [HttpPost("DelSubscriber")]
+        public async Task<ActionResult> DelSubscriber(SubscriberTelegramBot sub)
+        {
+            try
+            {
+                 _context.SubscriberTelegramBots.Remove(sub);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             return NoContent();
         }

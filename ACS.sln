@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACS_BlazorView", "ACS_Blazo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACS_API", "ACS_API\ACS_API.csproj", "{CCA374DF-E0DF-42E0-B7CC-D4FFB7F7A4E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{FCA31C5E-1D40-44AE-9AAE-257977854984}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{FCA31C5E-1D40-44AE-9AAE-257977854984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryBD", "LibraryBD\LibraryBD.csproj", "{174274C4-D931-42A9-84D3-A3A4212B19C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryBD", "LibraryBD\LibraryBD.csproj", "{174274C4-D931-42A9-84D3-A3A4212B19C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

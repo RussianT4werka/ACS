@@ -22,12 +22,12 @@ namespace ACS_API.Controllers
 
         // GET: api/Offenders
         [HttpGet("GetOffenders")]
-        public async Task<ActionResult<IEnumerable<Offender>>> GetOffenders()
+        public async Task<ActionResult<List<Offender>>> GetOffenders()
         {
-          if (_context.Offenders == null)
-          {
-              return NotFound();
-          }
+            if (_context.Offenders == null)
+            {
+                return NotFound();
+            }
             return await _context.Offenders.ToListAsync();
         }
 
@@ -35,10 +35,10 @@ namespace ACS_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Offender>> GetOffender(int id)
         {
-          if (_context.Offenders == null)
-          {
-              return NotFound();
-          }
+            if (_context.Offenders == null)
+            {
+                return NotFound();
+            }
             var offender = await _context.Offenders.FindAsync(id);
 
             if (offender == null)
@@ -85,17 +85,17 @@ namespace ACS_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Offender>> PostOffender(Offender offender)
         {
-          if (_context.Offenders == null)
-          {
-              return Problem("Entity set 'AcsContext.Offenders'  is null.");
-          }
+            if (_context.Offenders == null)
+            {
+                return Problem("Entity set 'AcsContext.Offenders'  is null.");
+            }
             _context.Offenders.Add(offender);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetOffender", new { id = offender.Id }, offender);
         }
 
-        [HttpPost ("SendOrNot")]
+        [HttpPost("SendOrNot")]
         public async Task<ActionResult<Offender>> SendOrNot(Offender offender)
         {
             try

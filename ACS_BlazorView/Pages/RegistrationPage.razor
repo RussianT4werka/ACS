@@ -12,27 +12,61 @@
 
 <style>
     .ali {
-        margin-top: 15%;
-        margin-left: 40%
+        margin-top: 10%;
+        margin-left: 35%;
+        vertical-align: central;
     }
+
+    .password {
+        width: 300px;
+        margin-bottom: 2%;
+        position: relative;
+    }
+
+    #password-input {
+        width: 100%;
+        padding: 5px 0;
+        height: 30px;
+        line-height: 40px;
+        text-indent: 10px;
+        margin: 0 0 15px 0;
+        border-radius: 5px;
+        border: 1px solid #999;
+        font-size: 18px;
+    }
+
+    .password-control {
+        position: absolute;
+        top: 10px;
+        right: 6px;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url(https://snipp.ru/demo/495/view.svg) 0 0 no-repeat;
+    }
+
+        .password-control.view {
+            background: url(https://snipp.ru/demo/495/no-view.svg) 0 0 no-repeat;
+        }
 </style>
 
 <EditForm class="ali" Model="@userData" OnSubmit="Reg">
     <h1 style="margin-bottom: 10%">Регистрация</h1>
+    <h4>Email</h4>
+    <div class="password">
+        <input type="email" class="form-control" placeholder="Введите эл. почту" @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
+    </div>
     <h4>Логин</h4>
-    <p>
-        <InputText id="login" @bind-Value="userData.Login" />
-    </p>
+    <div class="password">
+        <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
+    </div>
 
     <h4>Пароль</h4>
-    <p>
-        <InputText id="pass" @bind-Value="userData.Password" />
-    </p>
+    <div class="password">
+        <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Введите пароль" name="password">
+        <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+    </div>
 
-    <h4>Email</h4>
-    <p>
-        <InputText id="email" @bind-Value="userData.Email" />
-    </p>
 
     <p>
         <label style="color: red">@message</label>
@@ -44,6 +78,20 @@
     </p>
     
 </EditForm>
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function show_hide_password(target) {
+        var input = document.getElementById('exampleInputPassword1');
+        if (input.getAttribute('type') == 'password') {
+            target.classList.add('view');
+            input.setAttribute('type', 'text');
+        } else {
+            target.classList.remove('view');
+            input.setAttribute('type', 'password');
+        }
+        return false;
+    }
+</script>
 @code {
     Index.UserData userData = new();
     string message = "";
@@ -55,7 +103,7 @@
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/AboutUser");   
+            nav.NavigateTo("/TelegramBotPage");
         }
         else
         {
