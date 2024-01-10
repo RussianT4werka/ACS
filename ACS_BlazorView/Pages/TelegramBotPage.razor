@@ -8,25 +8,26 @@
 @inject SessionManager sessions;
 @inject AuthenticationStateProvider auth;
 @inject NavigationManager nav;
+<style>
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top:10px;
+    }
+</style>
 <PageTitle>Настройки рассылки</PageTitle>
 <CascadingAuthenticationState>
 <AuthorizeView>
     <nav class="navbar">
         <div class="container-fluid">
-        <h3>Список подписчиков</h3>
+        <h5 style="font-size: 130%" class="fw-bold text-white">Список подписчиков</h5>
             <button type="button" class="btn btn-primary">Логи *в разработке*</button>
 
         </div>
     </nav>
-   <style>
-            .container-fluid {
-                background-color: #ff7300;
-            }
-            .navbar{
-                background-color: #ff7300;
-            }
-   </style>
-    
         <table class="table">
             <thead>
                 <tr>
