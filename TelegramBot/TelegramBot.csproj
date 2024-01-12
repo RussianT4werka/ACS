@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ACS_API\ACS_API.csproj" />
+    <ProjectReference Include="..\ACS_BlazorView\ACS_BlazorView.csproj" />
     <ProjectReference Include="..\LibraryBD\LibraryBD.csproj" />
   </ItemGroup>
 

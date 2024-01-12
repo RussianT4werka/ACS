@@ -23,6 +23,8 @@ public partial class AcsContext : DbContext
 
     public virtual DbSet<Event> Events { get; set; }
 
+    public virtual DbSet<Log> Logs { get; set; }
+
     public virtual DbSet<Offender> Offenders { get; set; }
 
     public virtual DbSet<Personal> Personals { get; set; }
@@ -35,7 +37,7 @@ public partial class AcsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;Trusted_Connection=true;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=10.10.1.102;Database=ACS;Trusted_Connection=True;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +101,14 @@ public partial class AcsContext : DbContext
                 .HasConstraintName("FK_Event_Point");
         });
 
+        modelBuilder.Entity<Log>(entity =>
+        {
+            entity.ToTable("Log");
+
+            entity.Property(e => e.DateTime).HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(500);
+        });
+
         modelBuilder.Entity<Offender>(entity =>
         {
             entity.ToTable("Offender");
@@ -140,7 +150,7 @@ public partial class AcsContext : DbContext
 
             entity.ToTable("SubscriberTelegramBOT");
 
-            entity.Property(e => e.ChatId).ValueGeneratedNever();
+            entity.Property(e => e.ChatId).HasMaxLength(15);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.SubscribeOrNot).HasDefaultValueSql("((0))");
             entity.Property(e => e.Surname).HasMaxLength(50);
@@ -157,7 +167,6 @@ public partial class AcsContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
-
     public static AcsContext GetInstance()
     {
         if (instance == null)

@@ -1,0 +1,69 @@
+﻿@page "/TelegramLogsPage"
+@using static ACS_BlazorView.Pages.Index;
+@using ACS_BlazorView.Data;
+@inject SessionManager manager;
+@using LibraryBD.BD;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject ProtectedSessionStorage storage
+@inject HttpClient httpclient;
+@inject SessionManager sessions;
+@inject AuthenticationStateProvider auth;
+@inject NavigationManager nav;
+<style>
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<PageTitle>Настройки рассылки</PageTitle>
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%" class="fw-bold text-white">Логи</h5>
+                <a @onclick="@(() => DeleteLogs())" class="btn btn-danger">Очистить логи</a>
+
+            </div>
+        </nav>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Текст лога</th>
+                    <th>Дата и время</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Log log in @Logs)
+                {
+                    <tr>
+                        <td>@log.Title</td>
+                        <td>@log.DateTime</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+
+    private List<Log> Logs = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        Logs = new();
+        GC.Collect();
+        Logs = await httpclient.GetFromJsonAsync<List<Log>>("Logs/GetListLogs");
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task DeleteLogs()
+    {
+        var answer = await httpclient.PostAsJsonAsync("Logs/DeleteListLogs", Logs);
+    }
+}

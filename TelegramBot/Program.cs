@@ -4,22 +4,22 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using LibraryBD.BD;
+using ACS_BlazorView;
 using System.Net.Http.Json;
 using Update = Telegram.Bot.Types.Update;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using System;
+using ACS_BlazorView.Pages;
 
 class Program
 {
     static ITelegramBotClient BotClient;
     static Update Update;
     static CancellationToken Token;
-
     private static ReceiverOptions _receiverOptions;
-
     private static TelegramBotClient client;
-
+    private static Log log;
     static HttpClient httpClient = new HttpClient();
     private static List<SubscriberTelegramBot> ListSub { get; set; }
     private static List<Offender> ListOffendersNotSend { get; set; }
@@ -140,18 +140,22 @@ class Program
                         await client.SendTextMessageAsync(
                         chatId: sub.ChatId,
                         text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
-                        Console.WriteLine($"{DateTime.Now} - Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"");
+                        log = new Log() { Title = $"{DateTime.Now} - Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now} ;
+                        await httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+                        Console.WriteLine(log.Title);
                     }
                     await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
                 }
-
-                Console.WriteLine($"{DateTime.Now} - Отправлено {ListSub.Count()} подписчикам.");
-                
+                log = new Log() { Title = $"{DateTime.Now} - Отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
+                httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+                Console.WriteLine(log.Title);
             }
         }
         catch(Exception ex)
         {
-            Console.WriteLine($"{DateTime.Now} - Ошибка : {ex}");
+            log = new Log() { Title = $"{DateTime.Now} - Ошибка : {ex}", DateTime = DateTime.Now };
+            httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+            Console.WriteLine(log.Title);
             Console.ReadLine();
         }
     }
@@ -164,7 +168,8 @@ class Program
                 => $"{DateTime.Now} - Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
-
+        log = new Log() { Title = ErrorMessage, DateTime = DateTime.Now}; 
+        httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
         Console.WriteLine(ErrorMessage);
         return Task.CompletedTask;
     }
