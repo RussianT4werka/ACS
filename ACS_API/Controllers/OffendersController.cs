@@ -22,11 +22,11 @@ namespace ACS_API.Controllers
 
         // GET: api/Offenders
         [HttpGet("GetOffenders")]
-        public async Task<ActionResult<List<Offender>>> GetOffenders()
+        public async Task<List<Offender>> GetOffenders()
         {
             if (_context.Offenders == null)
             {
-                return NotFound();
+                return null;
             }
             return await _context.Offenders.ToListAsync();
         }

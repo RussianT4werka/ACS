@@ -2,6 +2,7 @@
 @using static ACS_BlazorView.Pages.Index;
 @using ACS_BlazorView.Data;
 @inject SessionManager manager;
+@using LibraryBD.BD;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 @inject ProtectedSessionStorage storage
 @inject HttpClient httpclient;
@@ -28,8 +29,56 @@
 
             </div>
         </nav>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Должность</th>
+                    <th>Dec</th>
+                    <th>W26</th>
+                    <th>Hex</th>
+                    <th>Время</th>
+                    <th>Статус доклада о нарушении</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Offender offender in @Offenders)
+                {
+                    <tr>
+                        <td>@offender.Name</td>
+                        <td>@offender.Position</td>
+                        <td>@offender.Dec</td>
+                        <td>@offender.W26</td>
+                        <td>@offender.Hex</td>
+                        <td>@offender.Time</td>
+                        @if(offender.SendOrNot == 0)
+                        {
+                            var s = Convert.ToString(offender.SendOrNot);
+                            s = "Не отправлено";
+                            <td>@s</td>
+                        }
+                        else
+                        {
+                            var s = Convert.ToString(offender.SendOrNot) ;
+                            s = "Отправлено";
+                            <td>@s</td>
+                        }
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
+    private List<Offender> Offenders = new();
 
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        GC.Collect();
+        Offenders = await httpclient.GetFromJsonAsync<List<Offender>>("Offenders/GetOffenders");
+
+        await base.OnInitializedAsync();
+    }
 }

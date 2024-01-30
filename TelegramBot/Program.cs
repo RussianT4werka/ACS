@@ -30,7 +30,7 @@ class Program
 
         _receiverOptions = new ReceiverOptions // Настройки бота
         {
-            AllowedUpdates = new[] // Тут указываем типы получаемых Update`ов, о них подробнее расказано тут https://core.telegram.org/bots/api#update
+            AllowedUpdates = new[] // Тут указываем типы получаемых Update`ов, о них подробнее расказано тут http://core.telegram.org/bots/api#update
             {
                 UpdateType.Message, // Сообщения (текст, фото/видео, голосовые/видео сообщения и т.д.)
             },
@@ -38,7 +38,7 @@ class Program
         };
         client.StartReceiving(UpdateM, Error, _receiverOptions);
 
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(10)); //Вызов метода обновления каждые 10с
         while (await timer.WaitForNextTickAsync())
         {
             UpdateM(BotClient, Update, Token);
@@ -56,13 +56,13 @@ class Program
         {
             if (update != null && update.Message.Text == "/start")
             {
-                // Тут создаем нашу клавиатуру
+                // Создание клаиватуры
                 var inlineKeyboard = new InlineKeyboardMarkup(
                 new List<InlineKeyboardButton[]>()
                 {
-                    new InlineKeyboardButton[] // тут создаем массив кнопок
+                    new InlineKeyboardButton[] // Создание массива кнопок
                     {
-                        InlineKeyboardButton.WithUrl("Сайт компании", "https://safecity.pro/"),
+                        InlineKeyboardButton.WithUrl("Сайт компании", "http://safecity.pro/"),
                     }
                 });
                 await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"Привет {update.Message.Chat.Username}!", replyMarkup: inlineKeyboard); // Все клавиатуры передаются в параметр replyMarkup
@@ -78,8 +78,7 @@ class Program
                                     })
                 {
                     // автоматическое изменение размера клавиатуры, если не стоит true,
-                    // тогда клавиатура растягивается чуть ли не до луны,
-                    // проверить можете сами
+                    // тогда клавиатура растягивается
                     ResizeKeyboard = true,
                 };
 
@@ -88,12 +87,11 @@ class Program
 
                 return;
             }
-
         
             if (update != null)
             {
                 var message = update.Message;
-                var findChatID = await httpClient.GetFromJsonAsync<int>($"https://localhost:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
+                var findChatID = await httpClient.GetFromJsonAsync<int>($"http://10.10.1.7:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
                 if (!message.Text.IsNullOrEmpty() && message.Text.Contains("Хочу получать уведомления") && findChatID == 0 || findChatID == 0)
                 {
                     string stringChatId = Convert.ToString(message.Chat.Id);
@@ -104,7 +102,7 @@ class Program
                         Name = message.Chat.FirstName,
                         Surname = message.Chat.LastName
                     };
-                    await httpClient.PostAsJsonAsync("https://localhost:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
+                    await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"{update.Message.Chat.Username}, подписал вас на уведомления. Нужно только согласовать с администратором");
                 }
                 else
@@ -114,7 +112,7 @@ class Program
             }
 
         
-            List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("https://localhost:7123/api/Offenders/GetOffenders");
+            List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("http://10.10.1.7:7123/api/Offenders/GetOffenders");
             foreach (var offender in ListOffenders)
             {
                 if (offender.SendOrNot == 0)
@@ -124,7 +122,7 @@ class Program
             }
             if(ListOffendersNotSend != null && ListOffendersNotSend.Count > 0)
             {
-                List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>("https://localhost:7123/api/SubscriberTelegramBots/GetListSubscribers");
+                List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>("http://10.10.1.7:7123/api/SubscriberTelegramBots/GetListSubscribers");
                 foreach (var sub in Subscribers)
                 {
                     if (sub.SubscribeOrNot == 1)
@@ -140,36 +138,37 @@ class Program
                         await client.SendTextMessageAsync(
                         chatId: sub.ChatId,
                         text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
-                        log = new Log() { Title = $"{DateTime.Now} - Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now} ;
-                        await httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+                        log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now};
+                        await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
                         Console.WriteLine(log.Title);
                     }
-                    await httpClient.PostAsJsonAsync("https://localhost:7123/api/Offenders/SendOrNot", offender);
+                    await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/SendOrNot", offender);
                 }
-                log = new Log() { Title = $"{DateTime.Now} - Отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
-                httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+                log = new Log() { Title = $"Уведомление отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
+                httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
                 Console.WriteLine(log.Title);
             }
         }
         catch(Exception ex)
         {
-            log = new Log() { Title = $"{DateTime.Now} - Ошибка : {ex}", DateTime = DateTime.Now };
-            httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
-            Console.WriteLine(log.Title);
+            var exeption = $"Ошибка : {ex}";
+            log = new Log() { Title = exeption, DateTime = DateTime.Now };
+            httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+            Console.WriteLine(exeption);
             Console.ReadLine();
         }
     }
 
-    private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token)
+    private static Task Error(ITelegramBotClient client, Exception exception, CancellationToken token) //Метод обработки ошибок Teleram
     {
         var ErrorMessage = exception switch
         {
             ApiRequestException apiRequestException
-                => $"{DateTime.Now} - Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
         log = new Log() { Title = ErrorMessage, DateTime = DateTime.Now}; 
-        httpClient.PostAsJsonAsync("https://localhost:7123/api/Logs/WriteLog", log);
+        httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
         Console.WriteLine(ErrorMessage);
         return Task.CompletedTask;
     }
