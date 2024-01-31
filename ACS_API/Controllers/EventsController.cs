@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LibraryBD.BD;
 using System.Text.Json;
 using ACS_API.Tools;
+using Azure;
 
 namespace ACS_API.Controllers
 {
@@ -25,7 +26,7 @@ namespace ACS_API.Controllers
           
 
         [HttpPost("GetEvent")]
-        public async Task<IActionResult> GetEvent(string jsonSigur)
+        public async Task<string> GetEvent(string jsonSigur) 
         {
             try
             {
@@ -35,11 +36,11 @@ namespace ACS_API.Controllers
                     confirmedLogId = Convert.ToInt32(responseId),
                 };
                 string jsonString = JsonSerializer.Serialize(responseSigur);
-                return Ok(jsonString);
+                return jsonString;
             }
             catch(Exception ex)
             {
-                return BadRequest($"Некорректный формат полученных данных: {ex}");
+                return ex.Message;
             }
         }
         
