@@ -24,7 +24,7 @@ namespace ACS_API.Controllers
         }
           
 
-        [HttpGet("GetEvent")]
+        [HttpPost("GetEvent")]
         public async Task<IActionResult> GetEvent(string jsonSigur)
         {
             try
