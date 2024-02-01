@@ -9,6 +9,7 @@ using LibraryBD.BD;
 using System.Text.Json;
 using ACS_API.Tools;
 using Azure;
+using Newtonsoft.Json;
 
 namespace ACS_API.Controllers
 {
@@ -26,22 +27,16 @@ namespace ACS_API.Controllers
           
 
         [HttpPost("GetEvent")]
-        public async Task<string> GetEvent(string jsonSigur) 
+        public async Task<IActionResult> GetEvent([FromBody]object jsonSigur) //Нужно получать именно тело object, потому что из-за остальных типов он игнорит метод
         {
-            try
+            string stringJsonSigur = Convert.ToString(jsonSigur); //конвертируем json в строку
+            string responseId = stringJsonSigur.Split(new char[] { ',' })[0].Split(new char[] { ':' })[2]; //полученную строку разбиваю и берём нужный мне парамтр
+            var responseSigur = new ResponseSigur //формирую тело для будущего json ответа
             {
-                string responseId = jsonSigur.Split(new char[] { ',' })[0].Split(new char[] { ':' })[2];
-                var responseSigur = new ResponseSigur
-                {
-                    confirmedLogId = Convert.ToInt32(responseId),
-                };
-                string jsonString = JsonSerializer.Serialize(responseSigur);
-                return jsonString;
-            }
-            catch(Exception ex)
-            {
-                return ex.Message;
-            }
+                confirmedLogId = Convert.ToInt32(responseId),
+            };
+            string jsonString = System.Text.Json.JsonSerializer.Serialize(responseSigur); // Сериализую тело с параметром id события
+            return Ok(jsonString); //отвечаю серверу Sigur id'шником полученного события
         }
         
         [HttpGet("GetListEvents")]
