@@ -2,6 +2,7 @@
 @using static ACS_BlazorView.Pages.Index;
 @using ACS_BlazorView.Data;
 @inject SessionManager manager;
+@using LibraryBD.BD;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 @inject ProtectedSessionStorage storage
 @inject HttpClient httpclient;
@@ -25,10 +26,77 @@
         <div class="container-fluid">
         <h5 style="font-size: 130%" class="fw-bold text-white">События</h5>
             <button type="button" class="btn btn-primary">Кнопка</button>
-
         </div>
     </nav>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Должность</th>
+                    <th>Dec</th>
+                    <th>W26</th>
+                    <th>Hex</th>
+                    <th>Тип события</th>
+                    <th>Направление</th>
+                    <th>Точка прохода</th>
+                    <th>Время</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Event events in @Events)
+                {
+                    <tr>
+                        <td>@events.Fio</td>
+                        <td>@events.Position</td>
+                        <td>@events.Dec</td>
+                        <td>@events.W26</td>
+                        <td>@events.Hex</td>
+                        @if (events.PassOrDeny == "PASS")
+                        {
+                            var s = events.PassOrDeny;
+                            s = "Разрешено";
+                            <td>@s</td>
+                        }
+                        else
+                        {
+                            var s = events.PassOrDeny;
+                            s = "Отклонено";
+                            <td>@s</td>
+                        }
+                        @if (events.DirName == "IN")
+                        {
+                            var s = events.DirName;
+                            s = "Вход";
+                            <td>@s</td>
+                        }
+                        else
+                        {
+                            var s = events.DirName;
+                            s = "Выход";
+                            <td>@s</td>
+                        }
+                        @if (events.PointId == 1)
+                        {
+                            var s = Convert.ToString(events.PointId);
+                            s = "Кпп 1";
+                            <td>@s</td>
+                        }
+                        <td>@events.Time</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
+    private List<Event> Events = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        GC.Collect();
+        Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
+
+        await base.OnInitializedAsync();
+    }
 }

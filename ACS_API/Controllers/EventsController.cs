@@ -26,7 +26,7 @@ namespace ACS_API.Controllers
         }
           
 
-        [HttpPost("GetEvent")]
+        /*[HttpPost("GetEvent")]  //Метод принятия проходов
         public async Task<IActionResult> GetEvent([FromBody]object jsonSigur) //Нужно получать именно тело object, потому что из-за остальных типов он игнорит метод
         {
             string stringJsonSigur = Convert.ToString(jsonSigur); //конвертируем json в строку
@@ -37,7 +37,7 @@ namespace ACS_API.Controllers
             };
             string jsonString = System.Text.Json.JsonSerializer.Serialize(responseSigur); // Сериализую тело с параметром id события
             return Ok(jsonString); //отвечаю серверу Sigur id'шником полученного события
-        }
+        }*/
         
         [HttpGet("GetListEvents")]
         public async Task<ActionResult<IEnumerable<Event>>> GetListEvents()

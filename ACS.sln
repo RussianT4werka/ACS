@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBot", "TelegramBot\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryBD", "LibraryBD\LibraryBD.csproj", "{174274C4-D931-42A9-84D3-A3A4212B19C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPOST", "TestPOST\TestPOST.csproj", "{991E9BEB-4A65-44E4-ACD4-DBE42D658633}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{174274C4-D931-42A9-84D3-A3A4212B19C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{174274C4-D931-42A9-84D3-A3A4212B19C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{174274C4-D931-42A9-84D3-A3A4212B19C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{991E9BEB-4A65-44E4-ACD4-DBE42D658633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{991E9BEB-4A65-44E4-ACD4-DBE42D658633}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{991E9BEB-4A65-44E4-ACD4-DBE42D658633}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{991E9BEB-4A65-44E4-ACD4-DBE42D658633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

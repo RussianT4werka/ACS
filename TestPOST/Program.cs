@@ -13,7 +13,7 @@ class Program
         {
             try
             {
-                var post = await httpClient.PostAsJsonAsync($"http://10.10.1.7:7123/api/Events/GetEvent?jsonSigur={jsonSigur}", "");
+                var post = await httpClient.PostAsJsonAsync($"http://10.10.1.7:7123/api/Events/GetEvent", jsonSigur);
                 Console.WriteLine(post);
             }
             catch (Exception ex)

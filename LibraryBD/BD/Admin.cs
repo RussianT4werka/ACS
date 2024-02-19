@@ -18,4 +18,6 @@ public partial class Admin
     public string Password { get; set; } = null!;
 
     public string Email { get; set; } = null!;
+
+    public virtual ICollection<Log> Logs { get; set; } = new List<Log>();
 }

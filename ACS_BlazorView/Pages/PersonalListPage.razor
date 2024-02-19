@@ -1,0 +1,48 @@
+﻿@page "/PersonalListPage"
+@using static ACS_BlazorView.Pages.Index;
+@using ACS_BlazorView.Data;
+@inject SessionManager manager;
+@using LibraryBD.BD;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject ProtectedSessionStorage storage
+@inject HttpClient httpclient;
+@inject SessionManager sessions;
+@inject AuthenticationStateProvider auth;
+@inject NavigationManager nav;
+<style>
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<PageTitle>Персонал</PageTitle>
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%" class="fw-bold text-white">Персонал</h5>
+                <button type="button" class="btn btn-primary">Добавить</button>
+            </div>
+        </nav>
+        <table class="table">
+            <thead>
+                <tr>
+                </tr>
+            </thead>
+
+            <tbody>
+                    <tr>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    
+}
+
