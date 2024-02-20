@@ -80,10 +80,18 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        GC.Collect();
-        Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
+        Thread timer = new Thread(() => Timer());
+        timer.Start();
 
         await base.OnInitializedAsync();
+    }
+    private async Task Timer()
+    {
+        while (true)
+        {
+            Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
+            Thread.Sleep(1000);
+        }
     }
 
     async Task SubscribeOrNot(Subscriber sub)
