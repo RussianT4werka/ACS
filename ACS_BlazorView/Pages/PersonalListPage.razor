@@ -61,6 +61,7 @@
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
+    private IDisposable registration;
     private List<Personal> PersonalList = new();
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
@@ -69,17 +70,25 @@
         PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
         /*Thread timer = new Thread(() => Timer());
         timer.Start();*/
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/PersonalListPage")
+            {
+                Console.WriteLine("regwre");
+            }
+        };
 
         await base.OnInitializedAsync();
     }
+    
 
-    /*private async Task Timer()
+    private async Task Timer(object sender, LocationChangedEventArgs args)
     {
         while (true)
         {
             PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
             Thread.Sleep(1000);
         }
-    }*/
+    }
 }
 
