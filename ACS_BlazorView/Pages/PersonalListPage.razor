@@ -25,24 +25,61 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Персонал</h5>
-                <button type="button" class="btn btn-primary">Добавить</button>
+                <button type="button" class="btn btn-primary" href="/CreatePersonalPage">Добавить сотрудника</button>
             </div>
         </nav>
         <table class="table">
             <thead>
                 <tr>
+                    <th>ФИО</th>
+                    <th>Отдел</th>
+                    <th>Должность</th>
+                    <th>Фото</th>
+                    <th>Dec</th>
+                    <th>W26</th>
+                    <th>Hex</th>
                 </tr>
             </thead>
 
             <tbody>
+                @foreach(Personal pers in PersonalList)
+                {
                     <tr>
+                        <td>@pers.Fio</td>
+                        <td>@pers.Department</td>
+                        <td>@pers.Position</td>
+                        <td>@pers.Image</td>
+                        <td>@pers.Dec</td>
+                        <td>@pers.W26</td>
+                        <td>@pers.Hex</td>
                     </tr>
+                }
+                
                 
             </tbody>
         </table>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
-    
+    private List<Personal> PersonalList = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        GC.Collect();
+        PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
+        /*Thread timer = new Thread(() => Timer());
+        timer.Start();*/
+
+        await base.OnInitializedAsync();
+    }
+
+    /*private async Task Timer()
+    {
+        while (true)
+        {
+            PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
+            Thread.Sleep(1000);
+        }
+    }*/
 }
 

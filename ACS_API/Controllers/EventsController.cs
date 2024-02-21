@@ -26,7 +26,7 @@ namespace ACS_API.Controllers
         }
           
 
-        /*[HttpPost("GetEvent")]  //Метод принятия проходов
+        /*[HttpPost("GetEvent")]  //Метод принятия проходов Web-Del
         public async Task<IActionResult> GetEvent([FromBody]object jsonSigur) //Нужно получать именно тело object, потому что из-за остальных типов он игнорит метод
         {
             string stringJsonSigur = Convert.ToString(jsonSigur); //конвертируем json в строку

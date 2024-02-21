@@ -94,9 +94,17 @@
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
-        GC.Collect();
-        Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
+        Thread timer = new Thread(() => Timer());
+        timer.Start();
 
         await base.OnInitializedAsync();
+    }
+    private async Task Timer()
+    {
+        while (true)
+        {
+            Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
+            Thread.Sleep(1000);
+        }
     }
 }

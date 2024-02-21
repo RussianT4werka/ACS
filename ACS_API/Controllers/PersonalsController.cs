@@ -21,8 +21,8 @@ namespace ACS_API.Controllers
         }
 
         // GET: api/Personals
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Personal>>> GetPersonals()
+        [HttpGet("GetPersonals")]
+        public async Task<ActionResult<List<Personal>>> GetPersonals()
         {
           if (_context.Personals == null)
           {
