@@ -56,7 +56,6 @@
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
-        GC.Collect();
         Thread timer = new Thread(() => Timer());
         workCycle = true;
         timer.Start();

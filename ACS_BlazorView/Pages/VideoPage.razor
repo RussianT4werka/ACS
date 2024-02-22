@@ -1,0 +1,67 @@
+﻿@page "/VideoPage"
+@inject HttpClient httpClient
+
+
+<style>
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<PageTitle>Видеонаблюдение</PageTitle>
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%" class="fw-bold text-white">Видеонаблюдение</h5>
+                <a href="/" class="btn btn-primary">Кнопка</a>
+
+            </div>
+        </nav>
+        <h3>Отладочная таблица*</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Текст ответа</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (string resp in ListAResponse)
+                {
+                    <tr>
+                        <td>@resp</td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+            @message
+
+
+        </AuthorizeView>
+    </CascadingAuthenticationState>
+@code {
+    public string message { get; set; }
+    public List<string> ListAResponse { get; set; } = new();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync("https://10.10.1.210:8080/s/hls_api/get_video?channel=XxhtpszB&stream=main");
+            if (response != null)
+            {
+                ListAResponse.Add(response.ToString());
+            }
+        }
+        catch(Exception ex)
+        {
+            message = ex.ToString();
+        }
+        await base.OnInitializedAsync();
+    }
+    
+}
