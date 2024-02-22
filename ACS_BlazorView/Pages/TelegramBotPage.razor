@@ -75,19 +75,29 @@
 @code {
     UserData userData = new();
     string message = "";
+    private volatile static bool workCycle = new();
 
     private List<Subscriber> Subscribers = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         Thread timer = new Thread(() => Timer());
+        workCycle = true;
         timer.Start();
+
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/TelegramBotPage")
+            {
+                workCycle = false;
+            }
+        };
 
         await base.OnInitializedAsync();
     }
     private async Task Timer()
     {
-        while (true)
+        while (workCycle == true)
         {
             Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
             Thread.Sleep(1000);
@@ -116,7 +126,5 @@
 
         public byte? SubscribeOrNot { get; set; }
     }
-    
-    
 }
 

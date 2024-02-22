@@ -73,17 +73,27 @@
 </CascadingAuthenticationState>
 @code {
     private List<Offender> Offenders = new();
+    private volatile static bool workCycle = new();
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
         Thread timer = new Thread(() => Timer());
+        workCycle = true;
         timer.Start();
+
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/OffendersPage")
+            {
+                workCycle = false;
+            }
+        };
 
         await base.OnInitializedAsync();
     }
     private async Task Timer()
     {
-        while (true)
+        while (workCycle == true)
         {
             Offenders = await httpclient.GetFromJsonAsync<List<Offender>>("Offenders/GetOffenders");
             Thread.Sleep(1000);

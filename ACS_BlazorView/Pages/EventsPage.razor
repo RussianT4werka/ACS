@@ -91,17 +91,27 @@
 </CascadingAuthenticationState>
 @code {
     private List<Event> Events = new();
+    private volatile static bool workCycle = new();
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
         Thread timer = new Thread(() => Timer());
+        workCycle = true;
         timer.Start();
+
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/EventsPage")
+            {
+                workCycle = false;
+            }
+        };
 
         await base.OnInitializedAsync();
     }
     private async Task Timer()
     {
-        while (true)
+        while (workCycle == true)
         {
             Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
             Thread.Sleep(1000);

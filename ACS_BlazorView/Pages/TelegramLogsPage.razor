@@ -52,14 +52,25 @@
 @code {
 
     private List<Log> Logs = new();
+    private volatile static bool workCycle = new();
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
-        Logs = new();
         GC.Collect();
-        Logs = await httpclient.GetFromJsonAsync<List<Log>>("Logs/GetListLogs");
+        Thread timer = new Thread(() => Timer());
+        workCycle = true;
+        timer.Start();
 
         await base.OnInitializedAsync();
+    }
+
+    private async Task Timer()
+    {
+        while (workCycle == true)
+        {
+            Logs = await httpclient.GetFromJsonAsync<List<Log>>("Logs/GetListLogs");
+            Thread.Sleep(1000);
+        }
     }
 
     async Task DeleteLogs()
