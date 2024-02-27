@@ -11,6 +11,35 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+    .cam{
+        text-align:left;
+        transform: scale(0.2) !important;
+        transform-origin: 0px 0px;
+        height:1100px;
+        width:1700px;
+    }
+    /*общие настройки сетки*/
+    .grid {
+        /*рисуем зелёные рамки*/
+        border: 5px solid #d1e231;
+        width:auto;
+        /*подключаем сетку*/
+        display: grid;
+        /*формируем по 4 одинаковых строки и столбца*/
+        grid-template-columns: repeat(4, 342px);
+        grid-template-rows: repeat(3, 222px);
+    }
+
+        /*внешний вид ячеек*/
+        .grid > * {
+            /*фоновый цвет*/
+            background-color: #ffbf94;
+            /*скругление углов*/
+            border-radius: 5px;
+            /*расстояние от одной границы ячейки до другой*/
+            margin: 1px;
+            overflow:hidden;
+        }
 </style>
 <PageTitle>Видеонаблюдение</PageTitle>
 
@@ -23,25 +52,33 @@
 
             </div>
         </nav>
-        <h3>Отладочная таблица*</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Текст ответа</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (string resp in ListAResponse)
-                {
-                    <tr>
-                        <td>@resp</td>
-                    </tr>
-                }
-            </tbody>
-            </table>
-            @message
+        <div class="grid">
+            <!-- и создаём 16 вложенных элементов -->
+            <div><img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main"/></div>
+            <div><img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main"/></div>
+            <div><img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main"/></div>
+            <div><img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main"/></div>
+            <div>cam 5</div>
+            <div>cam 6</div>
+            <div>cam 7</div>
+            <div>cam 8</div>
+            <div>cam 9</div>
+            <div>cam 10</div>
+            <div>cam 11</div>
+            <div>cam 12</div>
+            
+        </div>
+        @* <div class="container">
+            <div class="row">
+                <div class="col">
+                    <img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main" />
+                    <img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main" />
+                </div>
+                
+            </div>
+        </div> *@
 
-
+                    
         </AuthorizeView>
     </CascadingAuthenticationState>
 @code {
@@ -49,9 +86,9 @@
     public List<string> ListAResponse { get; set; } = new();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        /*try
         {
-            var response = await httpClient.GetAsync("https://10.10.1.210:8080/s/hls_api/get_video?channel=XxhtpszB&stream=main");
+            var response = await httpClient.GetFromJsonAsync<string>("https://10.100.99.251:8080/s/hls_api/get_video?channel=XxhtpszB&stream=main");
             if (response != null)
             {
                 ListAResponse.Add(response.ToString());
@@ -60,7 +97,7 @@
         catch(Exception ex)
         {
             message = ex.ToString();
-        }
+        }*/
         await base.OnInitializedAsync();
     }
     
