@@ -1,5 +1,6 @@
 ﻿@page "/VideoPage"
-@inject HttpClient httpClient
+@using LibraryBD.BD;
+@inject HttpClient httpClient;
 
 
 <style>
@@ -26,8 +27,8 @@
         /*подключаем сетку*/
         display: grid;
         /*формируем по 4 одинаковых строки и столбца*/
-        grid-template-columns: repeat(4, 342px);
-        grid-template-rows: repeat(3, 222px);
+        grid-template-columns: repeat(@countColumn, 342px);
+        grid-template-rows: repeat(@countRow, 222px);
     }
 
         /*внешний вид ячеек*/
@@ -48,35 +49,20 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Видеонаблюдение</h5>
-                <a href="/" class="btn btn-primary">Кнопка</a>
+                <div>
+                    <a @onclick="@(() => PlusColumn())" class="btn btn-primary">+</a>
+                    <a @onclick="@(() => MinusColumn())" class="btn btn-primary">-</a>
+                </div>
+                
 
             </div>
         </nav>
         <div class="grid">
-            <!-- и создаём 16 вложенных элементов -->
-            <div><img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main"/></div>
-            <div><img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main"/></div>
-            <div><img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main"/></div>
-            <div><img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main"/></div>
-            <div>cam 5</div>
-            <div>cam 6</div>
-            <div>cam 7</div>
-            <div>cam 8</div>
-            <div>cam 9</div>
-            <div>cam 10</div>
-            <div>cam 11</div>
-            <div>cam 12</div>
-            
+            @foreach (VideoStream stream in VideoStreamList)
+            {
+                <div><img class="cam" src="@stream.Link" /></div>
+            }
         </div>
-        @* <div class="container">
-            <div class="row">
-                <div class="col">
-                    <img alt="Камера парковка" class="cam" src="http://10.100.99.251:555/XxhtpszB?container=mjpeg&stream=main" />
-                    <img alt="Камера вход в офис" class="cam" src="http://10.100.99.251:555/sKhw3CBV?container=mjpeg&stream=main" />
-                </div>
-                
-            </div>
-        </div> *@
 
                     
         </AuthorizeView>
@@ -84,21 +70,48 @@
 @code {
     public string message { get; set; }
     public List<string> ListAResponse { get; set; } = new();
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private int countColumn = new();
+    private int countRow = new();
+    private List<VideoStream> VideoStreamList { get; set; } = new();
+    protected override async Task OnInitializedAsync()
     {
-        /*try
+        try
         {
-            var response = await httpClient.GetFromJsonAsync<string>("https://10.100.99.251:8080/s/hls_api/get_video?channel=XxhtpszB&stream=main");
-            if (response != null)
+            countColumn = 4;
+            if (VideoStreamList.Count >= 4)
             {
-                ListAResponse.Add(response.ToString());
+                if (VideoStreamList.Count == 4)
+                {
+                    countRow = 1;
+                }
             }
+            else
+            {
+                countRow = 1;
+            }
+            VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+
         }
         catch(Exception ex)
         {
             message = ex.ToString();
-        }*/
+        }
         await base.OnInitializedAsync();
+    }
+    async Task PlusColumn()
+    {
+        if (countColumn <= VideoStreamList.Count())
+        {
+            countColumn += 1;
+
+        }
+    }
+    async Task MinusColumn()
+    {
+        if (VideoStreamList.Count() >= 1 && countColumn >= 2)
+        {
+            countColumn -= 1;
+        }
     }
     
 }
