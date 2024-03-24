@@ -22,7 +22,7 @@ namespace ACS_API
         private static TelegramBotClient client;
         private static Log log;
         static HttpClient httpClient = new HttpClient();
-        private static List<SubscriberTelegramBot> ListSub { get; set; }
+        private static List<SubscriberTelegramBot> ListSub { get; set; } = new();
         private static List<Offender> ListOffendersNotSend { get; set; }
         public static void Main(string[] args)
         {
@@ -78,6 +78,7 @@ namespace ACS_API
         {
             while (true)
             {
+                var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/CreateOffender","");
                 UpdateM(BotClient, Update, Token);
                 Thread.Sleep(1000);
             }
@@ -85,7 +86,6 @@ namespace ACS_API
 
         async static Task UpdateM(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
-            ListSub = new();
             ListOffendersNotSend = new();
             SubscriberTelegramBot SubscriberTelegramBot;
             try
@@ -176,11 +176,13 @@ namespace ACS_API
                             text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
                             log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now };
                             await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+                            await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/SendOrNot", offender); // эта строка
                             Console.WriteLine(log.Title);
                         }
-                        await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/SendOrNot", offender);
+                        //была тут
                     }
                     log = new Log() { Title = $"Уведомление отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
+                    ListSub.Clear();
                     httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
                     Console.WriteLine(log.Title);
                 }

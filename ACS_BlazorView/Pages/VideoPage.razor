@@ -77,19 +77,35 @@
     {
         try
         {
-            countColumn = 4;
+            VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+            countColumn = VideoStreamList.Count();
             if (VideoStreamList.Count >= 4)
             {
+                countColumn = 4;
                 if (VideoStreamList.Count == 4)
                 {
                     countRow = 1;
+                    countColumn = 4;
                 }
             }
             else
             {
+                if (VideoStreamList.Count == 3)
+                {
+                    countColumn = 3;
+                    countRow = 1;
+                }
+                if (VideoStreamList.Count == 2)
+                {
+                    countColumn = 2;
+                    countRow = 1;
+                }
+                if (VideoStreamList.Count <= 1)
+                {
+                    countRow = 0;
+                }
                 countRow = 1;
             }
-            VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
 
         }
         catch(Exception ex)
@@ -108,10 +124,16 @@
     }
     async Task MinusColumn()
     {
-        if (VideoStreamList.Count() >= 1 && countColumn >= 2)
+        if (countColumn >= VideoStreamList.Count())
         {
             countColumn -= 1;
+
+            if (countColumn < 4 && countColumn < VideoStreamList.Count())
+            {
+                countRow = 2;
+            }
         }
+        
     }
     
 }

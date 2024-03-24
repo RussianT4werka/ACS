@@ -79,6 +79,19 @@ namespace ACS_API.Controllers
 
             return NoContent();
         }
+        [HttpPost("CreateOffender")]
+        public async Task<ActionResult<Offender>> CreateOffender()
+        {
+            var newListEvents = _context.Events.ToList().Where(/*s => s.PassOrDeny == "DENY"*/ s => s.DirName == "OUT" && s.SendOrNot == 0);
+            foreach(var events in newListEvents)
+            {
+                var newOffender = new Offender() { Name = events.Fio, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = DateTime.Now };
+                _context.Offenders.AddAsync(newOffender);
+                events.SendOrNot = 1;
+                await _context.SaveChangesAsync();
+            }
+            return null;
+        }
 
         // POST: api/Offenders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
