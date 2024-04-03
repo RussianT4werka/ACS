@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryBD.BD;
+using Microsoft.Extensions.Logging;
 
 namespace ACS_API.Controllers
 {
@@ -14,7 +15,8 @@ namespace ACS_API.Controllers
     public class OffendersController : ControllerBase
     {
         private readonly AcsContext _context;
-
+        private Offender newOffender;
+        private List<Offender> newListOffender { get; set; }
         public OffendersController(AcsContext context)
         {
             _context = context;
@@ -82,14 +84,28 @@ namespace ACS_API.Controllers
         [HttpPost("CreateOffender")]
         public async Task<ActionResult<Offender>> CreateOffender()
         {
-            var newListEvents = _context.Events.ToList().Where(/*s => s.PassOrDeny == "DENY"*/ s => s.DirName == "OUT" && s.SendOrNot == 0);
-            foreach(var events in newListEvents)
+            newListOffender = new();
+            var newListEvents = _context.Events.ToList().Where(s => s.PassOrDeny == "DENY" && s.SendOrNot == 0);
+
+            if(newListEvents.Count() != 0 || newListEvents != null)
             {
-                var newOffender = new Offender() { Name = events.Fio, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = DateTime.Now };
-                _context.Offenders.AddAsync(newOffender);
-                events.SendOrNot = 1;
-                await _context.SaveChangesAsync();
+                foreach (var events in newListEvents)
+                {
+                    events.SendOrNot = 1;
+                    if (!string.IsNullOrEmpty(events.Fio))
+                    {
+                        newOffender = new Offender() { Name = events.Fio, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                    }
+                    else
+                    {
+                        newOffender = new Offender() { Name = "Неизвестно", Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                    }
+                    newListOffender.Add(newOffender);
+                }
+                
             }
+            _context.Offenders.AddRange(newListOffender);
+            await _context.SaveChangesAsync();
             return null;
         }
 

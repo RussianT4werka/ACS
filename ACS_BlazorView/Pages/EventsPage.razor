@@ -34,7 +34,7 @@
                     <th>Имя</th>
                     <th>Должность</th>
                     <th>Dec</th>
-                    <th>W26</th>
+                    @* <th>W26</th> *@
                     <th>Hex</th>
                     <th>Тип события</th>
                     <th>Направление</th>
@@ -44,58 +44,65 @@
             </thead>
 
             <tbody>
-                @foreach (Event events in @Events)
+                @try
                 {
-                    <tr>
-                        <td>@events.Fio</td>
-                        <td>@events.Position</td>
-                        <td>@events.Dec</td>
-                        <td>@events.W26</td>
-                        <td>@events.Hex</td>
-                        @if (events.PassOrDeny == "PASS")
-                        {
-                            var s = events.PassOrDeny;
-                            s = "Разрешено";
-                            <td>@s</td>
-                        }
-                        else
-                        {
-                            var s = events.PassOrDeny;
-                            s = "Отклонено";
-                            <td>@s</td>
-                        }
-                        @if (events.DirName == "IN")
-                        {
-                            var s = events.DirName;
-                            s = "Вход";
-                            <td>@s</td>
-                        }
-                        else
-                        {
-                            var s = events.DirName;
-                            s = "Выход";
-                            <td>@s</td>
-                        }
-                        @if (events.PointId == 4)
-                        {
-                            var s = Convert.ToString(events.PointId);
-                            s = "Точка 1";
-                            <td>@s</td>
-                        }
-                        @if (events.PointId == 6)
-                        {
-                            var s = Convert.ToString(events.PointId);
-                            s = "Точка 2";
-                            <td>@s</td>
-                        }
-                        @if (events.PointId == 8)
-                        {
-                            var s = Convert.ToString(events.PointId);
-                            s = "Точка 3";
-                            <td>@s</td>
-                        }
-                        <td>@events.Time</td>
-                    </tr>
+                    @foreach (Event events in @Events)
+                    {
+                        <tr>
+                            <td>@events.Fio</td>
+                            <td>@events.Position</td>
+                            <td>@events.Dec</td>
+                            @* <td>@events.W26</td> *@
+                            <td>@events.Hex</td>
+                            @if (events.PassOrDeny == "PASS")
+                            {
+                                var s = events.PassOrDeny;
+                                s = "Разрешено";
+                                <td>@s</td>
+                            }
+                            else
+                            {
+                                var s = events.PassOrDeny;
+                                s = "Отклонено";
+                                <td>@s</td>
+                            }
+                            @if (events.DirName == "IN")
+                            {
+                                var s = events.DirName;
+                                s = "Вход";
+                                <td>@s</td>
+                            }
+                            else
+                            {
+                                var s = events.DirName;
+                                s = "Выход";
+                                <td>@s</td>
+                            }
+                            @if (events.PointId == 4)
+                            {
+                                var s = Convert.ToString(events.PointId);
+                                s = "Точка 1";
+                                <td>@s</td>
+                            }
+                            @if (events.PointId == 6)
+                            {
+                                var s = Convert.ToString(events.PointId);
+                                s = "Точка 2";
+                                <td>@s</td>
+                            }
+                            @if (events.PointId == 8)
+                            {
+                                var s = Convert.ToString(events.PointId);
+                                s = "Точка 3";
+                                <td>@s</td>
+                            }
+                            <td>@events.Time</td>
+                        </tr>
+                    }
+                }
+                catch
+                {
+                    
                 }
             </tbody>
         </table>
@@ -126,6 +133,7 @@
         while (workCycle == true)
         {
             Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
+            Events.Reverse();
             Thread.Sleep(1000);
         }
     }

@@ -1,0 +1,91 @@
+﻿@page "/EditPersonalPage/{id:int}"
+@inject NavigationManager nav;
+@inject ProtectedSessionStorage storage;
+@inject HttpClient httpclient;
+@using LibraryBD.BD;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+<style>
+    .ali {
+        margin-top: 10%;
+        margin-left: 35%;
+        vertical-align: central;
+    }
+
+    .password {
+        width: 300px;
+        margin-bottom: 2%;
+        position: relative;
+    }
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<PageTitle>Изменение сотрудника</PageTitle>
+        <EditForm class="ali" Model="@Personal" OnSubmit="EditPersonal">
+            <h1 style="margin-bottom: 10%">Изменение сотрудника</h1>
+            <h4>ФИО</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите фамилию, имя и отчество" @bind="Personal.Fio" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Отдел</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите отдел" @bind="Personal.Department" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Должность</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите должность" @bind="Personal.Position" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Код Hex</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Подключите считыватель к компьютеру и приложите карту" @bind="Personal.Hex" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <p>
+                <label style="color: red">@message</label>
+            </p>
+
+            <p>
+                <button class="btn btn-success" type="submit">Изменить сотрудника</button>
+            </p>
+        </EditForm>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private List<Personal> PersonalList = new();
+    Personal Personal = new();
+    string message = "";
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
+            Personal = PersonalList.FirstOrDefault(s => s.Id == id);
+        }
+        catch
+        {
+            message = "Упс... Что-то пошло не так";
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task EditPersonal()
+    {
+        var answer = await httpclient.PostAsJsonAsync("Personals/EditPersonal", Personal);
+        if (answer.IsSuccessStatusCode)
+        {
+            message = "Работник успешно изменён";
+            nav.NavigateTo("/PersonalListPage");
+        }
+        else
+        {
+            message = "Случилась непредвиденная ошибка";
+        }
+    }
+}

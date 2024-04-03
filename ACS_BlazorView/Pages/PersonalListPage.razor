@@ -36,25 +36,37 @@
                     <th>Должность</th>
                     <th>Фото</th>
                     <th>Dec</th>
-                    <th>W26</th>
                     <th>Hex</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
 
             <tbody>
-                @foreach(Personal pers in PersonalList)
+                @try
                 {
-                    <tr>
-                        <td>@pers.Fio</td>
-                        <td>@pers.Department</td>
-                        <td>@pers.Position</td>
-                        <td>@pers.Image</td>
-                        <td>@pers.Dec</td>
-                        <td>@pers.W26</td>
-                        <td>@pers.Hex</td>
-                    </tr>
+                    @foreach(Personal pers in PersonalList)
+                    {
+                        <tr>
+                            <td>@pers.Fio</td>
+                            <td>@pers.Department</td>
+                            <td>@pers.Position</td>
+                            <td>@pers.Image</td>
+                            <td>@pers.Dec</td>
+                            <td>@pers.Hex</td>
+                            <td>
+                                <NavLink href="@($"/EditPersonalPage/{pers.Id}")" class="btn btn-primary">✏️</NavLink>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger" @onclick="@(() => DeletePers(pers))">🗑️</a>
+                            </td>
+                        </tr>
+                    }
                 }
-                
+                catch
+                {
+                    
+                }
                 
             </tbody>
         </table>
@@ -82,6 +94,12 @@
 
         await base.OnInitializedAsync();
     }
+
+    async Task DeletePers(Personal pers)
+    {
+        var answer = await httpclient.PostAsJsonAsync("Personals/DelPers", pers);
+    }
+
     
 
     private async Task Timer()

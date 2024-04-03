@@ -43,30 +43,34 @@
             </thead>
 
             <tbody>
-                @foreach (Offender offender in @Offenders)
+                @try
                 {
-                    <tr>
-                        <td>@offender.Name</td>
-                        <td>@offender.Position</td>
-                        <td>@offender.Dec</td>
-                        <td>@offender.W26</td>
-                        <td>@offender.Hex</td>
-                        <td>@offender.Time</td>
-                        @if(offender.SendOrNot == 0)
-                        {
-                            var s = Convert.ToString(offender.SendOrNot);
-                            s = "Не отправлено";
-                            <td>@s</td>
-                        }
-                        else
-                        {
-                            var s = Convert.ToString(offender.SendOrNot) ;
-                            s = "Отправлено";
-                            <td>@s</td>
-                        }
-                        
-                    </tr>
+                    @foreach (Offender offender in @Offenders)
+                    {
+                        <tr>
+                            <td>@offender.Name</td>
+                            <td>@offender.Position</td>
+                            <td>@offender.Dec</td>
+                            <td>@offender.W26</td>
+                            <td>@offender.Hex</td>
+                            <td>@offender.Time</td>
+                            @if (offender.SendOrNot == 0)
+                            {
+                                var s = Convert.ToString(offender.SendOrNot);
+                                s = "Не отправлено";
+                                <td>@s</td>
+                            }
+                            else
+                            {
+                                var s = Convert.ToString(offender.SendOrNot);
+                                s = "Отправлено";
+                                <td>@s</td>
+                            }
+
+                        </tr>
+                    }
                 }
+                catch{}
             </tbody>
         </table>
     </AuthorizeView>
@@ -96,6 +100,7 @@
         while (workCycle == true)
         {
             Offenders = await httpclient.GetFromJsonAsync<List<Offender>>("Offenders/GetOffenders");
+            Offenders.Reverse();
             Thread.Sleep(1000);
         }
     }
