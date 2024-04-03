@@ -46,7 +46,7 @@ namespace ACS_API.Controllers
                     editPers.Fio = personal.Fio;
                     editPers.Department = personal.Department;
                     editPers.Position = personal.Position;
-                    editPers.Hex = personal.Hex;
+                    editPers.W26 = personal.W26;
 
                     await _context.SaveChangesAsync();
                     return Ok();
@@ -69,7 +69,7 @@ namespace ACS_API.Controllers
             {
                 try
                 {
-                    var Pers = new Personal() { Fio = personal.Fio, Department = personal.Department, Position = personal.Position, Hex = personal.Hex };
+                    var Pers = new Personal() { Fio = personal.Fio, Department = personal.Department, Position = personal.Position, W26 = personal.W26 };
                     _context.Personals.Add(Pers);
                     await _context.SaveChangesAsync();
                     return Ok();
