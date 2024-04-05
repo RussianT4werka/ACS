@@ -18,6 +18,38 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
 </style>
 <PageTitle>Нарушители</PageTitle>
 <CascadingAuthenticationState>
@@ -29,16 +61,15 @@
 
             </div>
         </nav>
-        <table class="table">
+        <table id="table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Имя</th>
                     <th>Должность</th>
-                    <th>Dec</th>
                     <th>W26</th>
-                    <th>Hex</th>
-                    <th>Время</th>
-                    <th>Статус доклада о нарушении</th>
+                    <th width=20%>Время</th>
+                    <th width=20%>Статус доклада о нарушении</th>
                 </tr>
             </thead>
 
@@ -48,11 +79,10 @@
                     @foreach (Offender offender in @Offenders)
                     {
                         <tr>
+                            <td>@Offenders.IndexOf(offender)</td>
                             <td>@offender.Name</td>
                             <td>@offender.Position</td>
-                            <td>@offender.Dec</td>
                             <td>@offender.W26</td>
-                            <td>@offender.Hex</td>
                             <td>@offender.Time</td>
                             @if (offender.SendOrNot == 0)
                             {

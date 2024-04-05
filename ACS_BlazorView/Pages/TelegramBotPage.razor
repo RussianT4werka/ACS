@@ -17,6 +17,38 @@
         background-color: #ff7300;
         padding-top:10px;
     }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
 </style>
 <PageTitle>Настройки рассылки</PageTitle>
 <CascadingAuthenticationState>
@@ -28,15 +60,16 @@
 
         </div>
     </nav>
-        <table class="table">
+        <table id="table">
             <thead>
                 <tr>
-                    <th>ChatID</th>
+                    <th>#</th>
+                    <th width=10%>ChatID</th>
                     <th>Имя</th>
                     <th>Фамилия</th>
                     <th>Username</th>
-                    <th>Уведомления</th>
-                    <th></th>
+                    <th width=5% >Уведомления</th>
+                    <th width=5%></th>
                 </tr>
             </thead>
 
@@ -44,12 +77,13 @@
                 @foreach (Subscriber sub in @Subscribers)
                 {
                     <tr>
+                        <td>@Subscribers.IndexOf(sub)</td>
                         <td>@sub.ChatId</td>
                         <td>@sub.Name</td>
                         <td>@sub.Surname</td>
                         <td>@sub.Username</td>
                         <td>
-                            <div class="form-check form-switch" @onclick="@(() => SubscribeOrNot(sub))">
+                            <div class="form-check form-switch" style="margin-left:40%" @onclick="@(() => SubscribeOrNot(sub))">
                                 @if (sub.SubscribeOrNot == 0)
                                 {
                                     <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault">

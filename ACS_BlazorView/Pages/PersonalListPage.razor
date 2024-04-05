@@ -18,6 +18,38 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
 </style>
 <PageTitle>Персонал</PageTitle>
 <CascadingAuthenticationState>
@@ -28,16 +60,15 @@
                 <a class="btn btn-primary" href="/CreatePersonalPage">Добавить сотрудника</a>
             </div>
         </nav>
-        <table class="table">
+        <table id="table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>ФИО</th>
                     <th>Отдел</th>
                     <th>Должность</th>
                     <th>Фото</th>
-                    <th>Dec</th>
                     <th>W26</th>
-                    <th>Hex</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -49,13 +80,12 @@
                     @foreach(Personal pers in PersonalList)
                     {
                         <tr>
+                            <td>@PersonalList.IndexOf(pers)</td>
                             <td>@pers.Fio</td>
                             <td>@pers.Department</td>
                             <td>@pers.Position</td>
                             <td>@pers.Image</td>
-                            <td>@pers.Dec</td>
                             <td>@pers.W26</td>
-                            <td>@pers.Hex</td>
                             <td>
                                 <NavLink href="@($"/EditPersonalPage/{pers.Id}")" class="btn btn-primary">✏️</NavLink>
                             </td>
@@ -72,6 +102,9 @@
                 
             </tbody>
         </table>
+        <script>
+            
+        </script>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {

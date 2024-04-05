@@ -65,15 +65,15 @@ namespace ACS_API.Controllers
             {
                 if (string.IsNullOrWhiteSpace(user.Login) ||
                     string.IsNullOrWhiteSpace(user.Password))
-                    return BadRequest("Мало данных. Введите еще.");
+                    return BadRequest("Не все поля заполнены. Введите логин и пароль.");
 
                 var findUser = await _context.Admins.FirstOrDefaultAsync(s => s.Login == user.Login);
                 if (findUser == null)
-                    return BadRequest("Логин не найден. Регистрироваться будешь, а?");
+                    return BadRequest("Логина не существует. Убедитесь в правильности введённого логина или зарегистрируйтесь.");
 
                 string hashPass = Hash.HashPassword(user);
                 if (findUser.Password != hashPass)
-                    return BadRequest("Пароль неверный. Подумай еще. Спроси родителей");
+                    return BadRequest("Пароль для аккаунта неверный");
 
 
                 if (!string.IsNullOrWhiteSpace(user.Login) &&

@@ -18,6 +18,38 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
 </style>
 <PageTitle>События</PageTitle>
 <CascadingAuthenticationState>
@@ -28,14 +60,13 @@
             <button type="button" class="btn btn-primary">Кнопка</button>
         </div>
     </nav>
-        <table class="table">
+        <table id="table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Имя</th>
                     <th>Должность</th>
-                    <th>Dec</th>
-                    @* <th>W26</th> *@
-                    <th>Hex</th>
+                    <th>W26</th>
                     <th>Тип события</th>
                     <th>Направление</th>
                     <th>Точка прохода</th>
@@ -49,11 +80,10 @@
                     @foreach (Event events in @Events)
                     {
                         <tr>
+                            <td>@Events.IndexOf(events)</td>
                             <td>@events.Fio</td>
                             <td>@events.Position</td>
-                            <td>@events.Dec</td>
-                            @* <td>@events.W26</td> *@
-                            <td>@events.Hex</td>
+                            <td>@events.W26</td>
                             @if (events.PassOrDeny == "PASS")
                             {
                                 var s = events.PassOrDeny;
