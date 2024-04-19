@@ -1,7 +1,7 @@
 ﻿@page "/VideoPage"
 @using LibraryBD.BD;
 @inject HttpClient httpClient;
-
+@inject NavigationManager nav;
 
 <style>
     .container-fluid {
@@ -16,8 +16,8 @@
         text-align:left;
         transform: scale(0.2) !important;
         transform-origin: 0px 0px;
-        height:1100px;
-        width:1700px;
+        height:1300px;
+        width:2065px;
     }
     /*общие настройки сетки*/
     .grid {
@@ -27,8 +27,8 @@
         /*подключаем сетку*/
         display: grid;
         /*формируем по 4 одинаковых строки и столбца*/
-        grid-template-columns: repeat(@countColumn, 342px);
-        grid-template-rows: repeat(@countRow, 222px);
+        grid-template-columns: repeat(@countColumn, 415px);
+        grid-template-rows: repeat(@countRow, 262px);
     }
 
         /*внешний вид ячеек*/
@@ -45,10 +45,19 @@
 <PageTitle>Видеонаблюдение</PageTitle>
 
 <CascadingAuthenticationState>
-    <AuthorizeView>
+    <AuthorizeView Context="addContext">
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Видеонаблюдение</h5>
+                    
+                    @* Надо сделать dropdown *@
+                    
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Дайте имя потоку" @bind="VideoStream.Name">
+                        <input class="form-control me-2" type="search" placeholder="Ссылка на mjpeg поток" @bind="VideoStream.Link">
+                        <a class="btn btn-success" @onclick="@(() => AddStream(VideoStream))">Добавить</a>
+                    </form>
+                <h7 style="color: white;">@message</h7>
                 <div>
                     <a @onclick="@(() => PlusColumn())" class="btn btn-primary">+</a>
                     <a @onclick="@(() => MinusColumn())" class="btn btn-primary">-</a>
@@ -62,9 +71,7 @@
             {
                 <div><img class="cam" src="@stream.Link" /></div>
             }
-        </div>
-
-                    
+        </div>      
         </AuthorizeView>
     </CascadingAuthenticationState>
 @code {
@@ -72,6 +79,7 @@
     public List<string> ListAResponse { get; set; } = new();
     private int countColumn = new();
     private int countRow = new();
+    VideoStream VideoStream = new();
     private List<VideoStream> VideoStreamList { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
@@ -79,34 +87,26 @@
         {
             VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
             countColumn = VideoStreamList.Count();
-            if (VideoStreamList.Count >= 4)
+            if (VideoStreamList.Count <= 4)
             {
                 countColumn = 4;
-                if (VideoStreamList.Count == 4)
-                {
-                    countRow = 1;
-                    countColumn = 4;
-                }
-            }
-            else
-            {
-                if (VideoStreamList.Count == 3)
-                {
-                    countColumn = 3;
-                    countRow = 1;
-                }
-                if (VideoStreamList.Count == 2)
-                {
-                    countColumn = 2;
-                    countRow = 1;
-                }
-                if (VideoStreamList.Count <= 1)
-                {
-                    countRow = 0;
-                }
                 countRow = 1;
             }
-
+            if (VideoStreamList.Count > 4 && VideoStreamList.Count <= 8)
+            {
+                countColumn = 4;
+                countRow = 2;
+            }
+            if (VideoStreamList.Count > 8 && VideoStreamList.Count <= 12)
+            {
+                countColumn = 4;
+                countRow = 3;
+            }
+            if (VideoStreamList.Count > 12 && VideoStreamList.Count <= 16)
+            {
+                countColumn = 4;
+                countRow = 4;
+            }
         }
         catch(Exception ex)
         {
@@ -133,7 +133,34 @@
                 countRow = 2;
             }
         }
+
+    }
+    async Task AddStream(VideoStream stream)
+    { 
+        if (!string.IsNullOrEmpty(stream.Name) && !string.IsNullOrEmpty(stream.Link))
+        {
+            VideoStream = new() { Name = stream.Name, Link = stream.Link };
+            var answer = await httpClient.PostAsJsonAsync("VideoStreams/AddStream", VideoStream);
+            if (answer.IsSuccessStatusCode)
+            {
+                try
+                {
+                     nav.NavigateTo($"{nav.Uri}", true);
+                }
+                catch (Exception ex)
+                {
+                    message = ex.ToString();
+                }
+            }
+            else
+            {
+                message = "Что-то пошло не так";
+            }
+        }
+        else
+        {
+            message = "Заполните все поля";
+        }
         
     }
-    
 }
