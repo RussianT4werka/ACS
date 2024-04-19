@@ -26,33 +26,39 @@
         padding-top: 10px;
     }
 </style>
-<PageTitle>Добавление сотрудника</PageTitle>
-<EditForm class="ali" Model="@Personal" OnSubmit="CreatePersonal">
-    <h1 style="margin-bottom: 10%">Добавление сотрудника</h1>
-    <h4>ФИО</h4>
-    <div class="password">
-        <input type="login" class="form-control" placeholder="Введите фамилию, имя и отчество" @bind="Personal.Fio" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <h4>Отдел</h4>
-    <div class="password">
-        <input type="login" class="form-control" placeholder="Введите отдел" @bind="Personal.Department" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <h4>Должность</h4>
-    <div class="password">
-        <input type="login" class="form-control" placeholder="Введите должность" @bind="Personal.Position" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <h4>Код W26</h4>
-    <div class="password">
-        <input type="login" class="form-control" placeholder="Подключите считыватель к компьютеру и приложите карту" @bind="Personal.W26" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <p>
-        <label style="color: red">@message</label>
-    </p>
+<CascadingAuthenticationState>
+    <AuthorizeView Context="createContext">
+        <PageTitle>Добавление сотрудника</PageTitle>
+        <EditForm class="ali" Model="@Personal" OnSubmit="CreatePersonal">
+            <h1 style="margin-bottom: 10%">Добавление сотрудника</h1>
+            <h4>ФИО</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите фамилию, имя и отчество" @bind="Personal.Fio" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Отдел</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите отдел" @bind="Personal.Department" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Должность</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите должность" @bind="Personal.Position" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Код W26</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Подключите считыватель к компьютеру и приложите карту" @bind="Personal.W26" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <p>
+                <label style="color: red">@message</label>
+            </p>
 
-    <p>
-        <button class="btn btn-success" type="submit">Добавить сотрудника</button>
-    </p>
-</EditForm>
+            <p>
+                <button class="btn btn-success" type="submit">Добавить сотрудника</button>
+            </p>
+        </EditForm>
+    </AuthorizeView>
+    
+</CascadingAuthenticationState>
+
 
 @code {
     Personal Personal = new();
@@ -73,18 +79,27 @@
 
     async Task CreatePersonal()
     {
-        var answer = await httpclient.PostAsJsonAsync("Personals/CreatePersonal", Personal);
-        if (answer.IsSuccessStatusCode)
+        if (!string.IsNullOrEmpty(Personal.Fio))
         {
-            message = "Работник успешно сохранён";
-            Personal.Fio = null;
-            Personal.Department = null;
-            Personal.Position = null;
-            Personal.W26 = null;
+            var answer = await httpclient.PostAsJsonAsync("Personals/CreatePersonal", Personal);
+
+            if (answer.IsSuccessStatusCode)
+            {
+                message = "Работник успешно сохранён";
+                Personal.Fio = null;
+                Personal.Department = null;
+                Personal.Position = null;
+                Personal.W26 = null;
+            }
+            else
+            {
+                message = "Случилась непредвиденная ошибка";
+            }
         }
         else
         {
-            message = "Случилась непредвиденная ошибка";
+            message = "Заполните хотя-бы ФИО";
         }
+
     }
 }
