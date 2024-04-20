@@ -42,6 +42,9 @@
             overflow:hidden;
         }
 </style>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <PageTitle>Видеонаблюдение</PageTitle>
 
 <CascadingAuthenticationState>
@@ -49,19 +52,34 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Видеонаблюдение</h5>
-                    
-                    @* Надо сделать dropdown *@
-                    
-                    <form class="d-flex" role="search">
+                    <form class="d-flex" style="align-content:center" role="search">
+
+                    <a class="btn btn-danger" href="/StreamListPage" style="margin-right:1%; width: 70%">Список потоков</a>
+
+                    <div class="btn-group" style="margin-right:1%">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Сетка
+                        </button>
+                        <div class="dropdown-menu">
+                            <a @onclick="@(() => EditColumn(1))" class="dropdown-item">1 колонка</a>
+                            <a @onclick="@(() => EditColumn(2))" class="dropdown-item">2 колонки</a>
+                            <a @onclick="@(() => EditColumn(3))" class="dropdown-item">3 колонки</a>
+                            <a @onclick="@(() => EditColumn(4))" class="dropdown-item">4 колонки</a>
+                        </div>
+                    </div>
+
+                    @if(message == null)
+                    {
                         <input class="form-control me-2" type="search" placeholder="Дайте имя потоку" @bind="VideoStream.Name">
                         <input class="form-control me-2" type="search" placeholder="Ссылка на mjpeg поток" @bind="VideoStream.Link">
+                    }
+                    else
+                    {
+                        <input class="form-control me-2" type="search" placeholder="@message" @bind="VideoStream.Name">
+                        <input class="form-control me-2" type="search" placeholder="@message" @bind="VideoStream.Link">
+                    }  
                         <a class="btn btn-success" @onclick="@(() => AddStream(VideoStream))">Добавить</a>
                     </form>
-                <h7 style="color: white;">@message</h7>
-                <div>
-                    <a @onclick="@(() => PlusColumn())" class="btn btn-primary">+</a>
-                    <a @onclick="@(() => MinusColumn())" class="btn btn-primary">-</a>
-                </div>
                 
 
             </div>
@@ -69,7 +87,7 @@
         <div class="grid">
             @foreach (VideoStream stream in VideoStreamList)
             {
-                <div><img class="cam" src="@stream.Link" /></div>
+                <div><img class="cam" title="@stream.Name" src="@stream.Link" /></div>
             }
         </div>      
         </AuthorizeView>
@@ -86,7 +104,6 @@
         try
         {
             VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
-            countColumn = VideoStreamList.Count();
             if (VideoStreamList.Count <= 4)
             {
                 countColumn = 4;
@@ -114,27 +131,37 @@
         }
         await base.OnInitializedAsync();
     }
-    async Task PlusColumn()
+
+    async Task EditColumn(int id)
     {
-        if (countColumn <= VideoStreamList.Count())
+        switch (id)
         {
-            countColumn += 1;
+            case 1:
+                countColumn = 1;
+                countRow = VideoStreamList.Count;
+                break;
 
+            case 2:
+                countColumn = 2;
+                decimal col2 = VideoStreamList.Count;
+                countRow = Convert.ToInt32(Math.Ceiling(col2 / Convert.ToDecimal(2)));
+            break;
+
+            case 3:
+                countColumn = 3;
+                decimal col3 = VideoStreamList.Count;
+                countRow = Convert.ToInt32(Math.Ceiling(col3 / Convert.ToDecimal(3)));
+            break;
+
+            case 4:
+                countColumn = 4;
+                decimal col4 = VideoStreamList.Count;
+                countRow = Convert.ToInt32(Math.Ceiling(col4 / Convert.ToDecimal(4)));
+            break;
         }
-    }
-    async Task MinusColumn()
-    {
-        if (countColumn >= VideoStreamList.Count())
-        {
-            countColumn -= 1;
-
-            if (countColumn < 4 && countColumn < VideoStreamList.Count())
-            {
-                countRow = 2;
-            }
-        }
 
     }
+
     async Task AddStream(VideoStream stream)
     { 
         if (!string.IsNullOrEmpty(stream.Name) && !string.IsNullOrEmpty(stream.Link))

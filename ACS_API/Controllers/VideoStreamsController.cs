@@ -40,32 +40,27 @@ namespace ACS_API.Controllers
             {
                 _context.VideoStreams.Add(videoStream);
                 await _context.SaveChangesAsync();
+                return Ok();
             }
             catch (Exception ex)
             {
                return BadRequest(ex.Message);
             }
-            return Ok();
         }
 
-        // DELETE: api/VideoStreams/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVideoStream(int id)
+        [HttpPost("DelStream")]
+        public async Task<ActionResult<VideoStream>> DelStream(VideoStream videoStream)
         {
-            if (_context.VideoStreams == null)
+            try
             {
-                return NotFound();
+                _context.VideoStreams.Remove(videoStream);
+                await _context.SaveChangesAsync();
+                return Ok();
             }
-            var videoStream = await _context.VideoStreams.FindAsync(id);
-            if (videoStream == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.VideoStreams.Remove(videoStream);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

@@ -1,0 +1,125 @@
+﻿@page "/StreamListPage"
+@using LibraryBD.BD;
+@inject HttpClient httpClient;
+@inject NavigationManager nav;
+
+<style>
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
+</style>
+
+<PageTitle>Список потоков</PageTitle>
+
+<CascadingAuthenticationState>
+    <AuthorizeView Context="addContext">
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%" class="fw-bold text-white">Список потоков</h5>
+                <a class="btn btn-primary" href="/VideoPage">Назад</a>
+            </div>
+            
+        </nav>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Имя потока</th>
+                    <th>Ссылка</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @try
+                {
+                    @foreach (VideoStream stream in @VideoStreamList)
+                    {
+                        <tr>
+                            <td>@VideoStreamList.IndexOf(stream)</td>
+                            <td>@stream.Name</td>
+                            <td>@stream.Link</td>
+                            <td>
+                                <a class="btn btn-danger" @onclick="@(() => DeleteStream(stream))">🗑️</a>
+                            </td>
+
+                        </tr>
+                    }
+                }
+                catch { }
+            </tbody>
+        </table>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    public string message { get; set; }
+    private volatile static bool workCycle = new();
+    private List<VideoStream> VideoStreamList = new();
+    protected override async Task OnInitializedAsync()
+    {
+        Thread timer = new Thread(() => Timer());
+        workCycle = true;
+        timer.Start();
+
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/StreamListPage")
+            {
+                workCycle = false;
+            }
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Timer()
+    {
+        while (workCycle == true)
+        {
+            VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+            Thread.Sleep(1000);
+        }
+    }
+
+    async Task DeleteStream(VideoStream stream)
+    {
+        var answer = await httpClient.PostAsJsonAsync("VideoStreams/DelStream", stream);
+    }
+}
