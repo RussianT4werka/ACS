@@ -33,7 +33,7 @@ public partial class AcsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;Trusted_Connection=true;TrustServerCertificate=true;");
+        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;Trusted_Connection=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,7 +74,7 @@ public partial class AcsContext : DbContext
                 .HasColumnName("FIO");
             entity.Property(e => e.Hex).HasMaxLength(50);
             entity.Property(e => e.PassOrDeny).HasMaxLength(50);
-            entity.Property(e => e.PointId).HasMaxLength(50);
+            entity.Property(e => e.PointId).HasDefaultValueSql("((0))");
             entity.Property(e => e.Position).HasMaxLength(100);
             entity.Property(e => e.Time).HasMaxLength(50);
             entity.Property(e => e.TimeConverted).HasColumnType("datetime");
@@ -101,19 +101,13 @@ public partial class AcsContext : DbContext
         {
             entity.ToTable("Offender");
 
-            entity.Property(e => e.Dec)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.Hex)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.Dec).HasMaxLength(50);
+            entity.Property(e => e.Hex).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Position).HasMaxLength(50);
             entity.Property(e => e.SendOrNot).HasDefaultValueSql("((0))");
             entity.Property(e => e.Time).HasColumnType("datetime");
-            entity.Property(e => e.W26)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.W26).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Personal>(entity =>
@@ -151,6 +145,7 @@ public partial class AcsContext : DbContext
             entity.ToTable("VideoStream");
 
             entity.Property(e => e.Link).HasMaxLength(100);
+            entity.Property(e => e.LinkOpenDoor).HasMaxLength(100);
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 

@@ -1,0 +1,99 @@
+﻿@page "/EditStreamPage/{id:int}"
+@inject NavigationManager nav;
+@inject ProtectedSessionStorage storage;
+@inject HttpClient httpclient;
+@using LibraryBD.BD;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+<style>
+    .ali {
+        margin-top: 10%;
+        margin-left: 35%;
+        vertical-align: central;
+    }
+
+    .password {
+        width: 300px;
+        margin-bottom: 2%;
+        position: relative;
+    }
+
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<CascadingAuthenticationState>
+    <AuthorizeView Context="editContext">
+        <PageTitle>Изменение потока</PageTitle>
+        <EditForm class="ali" Model="@Stream" OnSubmit="EditStream">
+            <h1 style="margin-bottom: 10%">Изменение mjpeg потока</h1>
+            <h4>Название</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите название потока" @bind="Stream.Name" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Ссылка на mjpeg поток</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Вставьте ссылку" @bind="Stream.Link" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Ссылка на открытие двери</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Вставьте ссылку" @bind="Stream.LinkOpenDoor" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <p>
+                <label style="color: red">@message</label>
+            </p>
+
+            <p>
+                <button class="btn btn-success" type="submit">Изменить</button>
+            </p>
+        </EditForm>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private List<VideoStream> StreamList = new();
+    VideoStream Stream = new();
+    string message = "";
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            StreamList = await httpclient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+            Stream = StreamList.FirstOrDefault(s => s.Id == id);
+        }
+        catch
+        {
+            message = "Упс... Что-то пошло не так";
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task EditStream()
+    {
+        if (!string.IsNullOrEmpty(Stream.Name) && !string.IsNullOrEmpty(Stream.Link))
+        {
+            var answer = await httpclient.PostAsJsonAsync("VideoStreams/EditStream", Stream);
+            if (answer.IsSuccessStatusCode)
+            {
+                message = "Поток успешно изменён";
+                nav.NavigateTo("/StreamListPage");
+            }
+            else
+            {
+                message = "Случилась непредвиденная ошибка";
+            }
+        }
+        else
+        {
+            message = "Поля \"Название\" и \"Ссылка на mjpeg поток\" не должны быть пустыми";
+        }
+
+    }
+}

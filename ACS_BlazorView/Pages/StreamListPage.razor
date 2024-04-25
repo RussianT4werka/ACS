@@ -62,7 +62,9 @@
                 <tr>
                     <th>#</th>
                     <th>Имя потока</th>
-                    <th>Ссылка</th>
+                    <th>Ссылка на потока</th>
+                    <th>Ссылка на открытие двери</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -76,6 +78,10 @@
                             <td>@VideoStreamList.IndexOf(stream)</td>
                             <td>@stream.Name</td>
                             <td>@stream.Link</td>
+                            <td>@stream.LinkOpenDoor</td>
+                            <td>
+                                <NavLink href="@($"/EditStreamPage/{stream.Id}")" class="btn btn-primary">✏️</NavLink>
+                            </td>
                             <td>
                                 <a class="btn btn-danger" @onclick="@(() => DeleteStream(stream))">🗑️</a>
                             </td>

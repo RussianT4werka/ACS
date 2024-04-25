@@ -62,5 +62,23 @@ namespace ACS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("EditStream")]
+        public async Task<ActionResult<VideoStream>> EditStream(VideoStream videoStream)
+        {
+            try
+            {
+                var oldStream = await _context.VideoStreams.FirstOrDefaultAsync(s => s.Id == videoStream.Id);
+                oldStream.Name = videoStream.Name;
+                oldStream.Link = videoStream.Link;
+                oldStream.LinkOpenDoor = videoStream.LinkOpenDoor;
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
