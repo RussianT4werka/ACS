@@ -19,5 +19,5 @@ public partial class Offender
 
     public DateTime? Time { get; set; }
 
-    public byte? SendOrNot { get; set; }
+    public byte SendOrNot { get; set; }
 }

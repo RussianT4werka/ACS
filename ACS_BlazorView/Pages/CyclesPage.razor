@@ -2,7 +2,10 @@
 @using static ACS_BlazorView.Pages.Index;
 @using ACS_BlazorView.Data;
 @inject SessionManager manager;
+@using LibraryBD.BD;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
 @inject ProtectedSessionStorage storage
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
@@ -17,6 +20,38 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+
+    #table {
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #table th {
+            font-weight: bold;
+            padding: 10px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #table td {
+            border: 1px solid #dddddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Нечетные строки */
+        #table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        /* Четные строки */
+        #table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
 </style>
 <PageTitle>Циклы</PageTitle>
 <CascadingAuthenticationState>
@@ -28,9 +63,67 @@
 
             </div>
         </nav>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th scope="col">ФИО</th>
+                    <th scope="col">Вход</th>
+                    <th scope="col">Выход</th>
+                    <th scope="col">Пробыл на базе</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @try
+                {
+                    @foreach (Cycle cycles in @Cycles)
+                    {
+                        <tr>
+                            <td>@Cycles.IndexOf(cycles)</td>
+                            <td>@cycles.Event.Fio</td>
+                            <td>@cycles.Event.Position</td>
+                            <td>@cycles.W26</td>
+                        </tr>
+                    }
+                }
+                catch
+                {
+
+                }
+            </tbody>
+        </table>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
+    private List<Cycle> Cycles = new();
     private volatile static bool workCycle = new();
 
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        Thread timer = new Thread(() => Timer());
+        workCycle = true;
+        timer.Start();
+
+        nav.LocationChanged += (obj, lcea) =>
+        {
+            if (lcea.Location != "https://10.10.1.7:7151/CyclesPage")
+            {
+                workCycle = false;
+            }
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Timer()
+    {
+        while (workCycle == true)
+        {
+            Cycles = await httpclient.GetFromJsonAsync<List<Cycle>>("Cycles/GetCycles");
+            Cycles.Reverse();
+            Thread.Sleep(1000);
+        }
+    }
 }

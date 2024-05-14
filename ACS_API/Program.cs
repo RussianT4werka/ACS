@@ -30,7 +30,7 @@ namespace ACS_API
 
             _receiverOptions = new ReceiverOptions // Настройки бота
             {
-                AllowedUpdates = new[] // Тут указываем типы получаемых Update`ов, о них подробнее расказано тут http://core.telegram.org/bots/api#update
+                AllowedUpdates = new[] // Тут указываю тип получаемых Update`ов http://core.telegram.org/bots/api#update
                 {
                 UpdateType.Message, // Сообщения (текст, фото/видео, голосовые/видео сообщения и т.д.)
             },
@@ -79,6 +79,7 @@ namespace ACS_API
             while (true)
             {
                 var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/CreateOffender","");
+                var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Cycles/CreateCycle", "");
                 UpdateM(BotClient, Update, Token);
                 Thread.Sleep(1000);
             }

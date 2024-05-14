@@ -17,5 +17,7 @@ public partial class Cycle
 
     public TimeSpan? Delta { get; set; }
 
+    public byte SendOrNot { get; set; }
+
     public virtual Event Event { get; set; } = null!;
 }
