@@ -49,6 +49,19 @@ namespace ACS_API.Controllers
             return await _context.Events.ToListAsync();
         }
 
+        [HttpGet("GetEvent")]
+        public async Task<ActionResult<Event>> GetEvent(int id)
+        {
+            if(id != null)
+            {
+                return await _context.Events.FirstOrDefaultAsync( s => s.Id == id);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         // POST: api/Events
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -62,26 +75,6 @@ namespace ACS_API.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEvent", new { id = @event.Id }, @event);
-        }
-
-        // DELETE: api/Events/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
-        {
-            if (_context.Events == null)
-            {
-                return NotFound();
-            }
-            var @event = await _context.Events.FindAsync(id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

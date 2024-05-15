@@ -68,6 +68,8 @@
                 <tr>
                     <th>#</th>
                     <th scope="col">ФИО</th>
+                    <th scope="col">Должность</th>
+                    <th scope="col">W26</th>
                     <th scope="col">Вход</th>
                     <th scope="col">Выход</th>
                     <th scope="col">Пробыл на базе</th>
@@ -84,6 +86,9 @@
                             <td>@cycles.Event.Fio</td>
                             <td>@cycles.Event.Position</td>
                             <td>@cycles.W26</td>
+                            <td>@cycles.TimeP1</td>
+                            <td>@cycles.TimeP2</td>
+                            <td>@cycles.Delta</td>
                         </tr>
                     }
                 }
@@ -119,9 +124,16 @@
 
     private async Task Timer()
     {
+
         while (workCycle == true)
         {
             Cycles = await httpclient.GetFromJsonAsync<List<Cycle>>("Cycles/GetCycles");
+            foreach(var newCycle in Cycles)
+            {
+                var checkEvent = await httpclient.GetFromJsonAsync<Event>("Events/GetEvent");
+                newCycle.Event.Fio = checkEvent.Fio;
+                newCycle.Event.Position = checkEvent.Position;
+            }
             Cycles.Reverse();
             Thread.Sleep(1000);
         }

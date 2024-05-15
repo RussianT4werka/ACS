@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
-namespace LibraryBD.BD;
+namespace ACS_API.DTO;
 
 public partial class Cycle
 {
@@ -20,6 +19,8 @@ public partial class Cycle
 
     public byte SendOrNot { get; set; }
 
-    [JsonIgnore]
-    public virtual Event Event { get; set; } = null!;
+
+    public string? Fio { get; set; }
+
+    public string? Position { get; set; }
 }
