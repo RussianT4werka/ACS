@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace LibraryBD.BD;
 
@@ -30,6 +31,5 @@ public partial class Event
     public DateTime? TimeConverted { get; set; }
 
     public byte SendOrNot { get; set; }
-
     public virtual ICollection<Cycle> Cycles { get; set; } = new List<Cycle>();
 }

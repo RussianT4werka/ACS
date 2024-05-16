@@ -79,12 +79,12 @@
             <tbody>
                 @try
                 {
-                    @foreach (Cycle cycles in @Cycles)
+                    @foreach (ACS_API.DTO.Cycle cycles in @Cycles)
                     {
                         <tr>
                             <td>@Cycles.IndexOf(cycles)</td>
-                            <td>@cycles.Event.Fio</td>
-                            <td>@cycles.Event.Position</td>
+                            <td>@cycles.Fio</td>
+                            <td>@cycles.Position</td>
                             <td>@cycles.W26</td>
                             <td>@cycles.TimeP1</td>
                             <td>@cycles.TimeP2</td>
@@ -101,7 +101,7 @@
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
-    private List<Cycle> Cycles = new();
+    private List<ACS_API.DTO.Cycle> Cycles = new();
     private volatile static bool workCycle = new();
 
 
@@ -110,6 +110,7 @@
         Thread timer = new Thread(() => Timer());
         workCycle = true;
         timer.Start();
+
 
         nav.LocationChanged += (obj, lcea) =>
         {
@@ -125,17 +126,15 @@
     private async Task Timer()
     {
 
+
         while (workCycle == true)
         {
-            Cycles = await httpclient.GetFromJsonAsync<List<Cycle>>("Cycles/GetCycles");
-            foreach(var newCycle in Cycles)
-            {
-                var checkEvent = await httpclient.GetFromJsonAsync<Event>("Events/GetEvent");
-                newCycle.Event.Fio = checkEvent.Fio;
-                newCycle.Event.Position = checkEvent.Position;
-            }
-            Cycles.Reverse();
+
+            Cycles = await httpclient.GetFromJsonAsync<List<ACS_API.DTO.Cycle>>("Cycles/GetCycles");
+
             Thread.Sleep(1000);
         }
+        
     }
 }
+

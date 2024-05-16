@@ -15,25 +15,38 @@ namespace ACS_API.Controllers
     public class CyclesController : ControllerBase
     {
         private readonly AcsContext _context;
-
+        private List<ACS_API.DTO.Cycle> fullCycles = new();
+        private ACS_API.DTO.Cycle fullCycle = new();
         public CyclesController(AcsContext context)
         {
             _context = context;
         }
 
         [HttpGet("GetCycles")]
-        public async Task<ActionResult<List<Cycle>>> GetCycles()
+        public async Task<ActionResult<List<ACS_API.DTO.Cycle>>> GetCycles()
         {
             try
             {
-                var fullCycle = await _context.Cycles.Include( s => s.Event).ToListAsync();
-                if (_context.Cycles == null)
+                var Cycle = await _context.Cycles.Include( s => s.Event).ToListAsync();
+                
+                if (Cycle == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    return fullCycle;
+                    foreach (var cycle in Cycle)
+                    {
+                        fullCycle = new();
+                        fullCycle.W26 = cycle.W26;
+                        fullCycle.TimeP1 = cycle.TimeP1;
+                        fullCycle.TimeP2 = cycle.TimeP2;
+                        fullCycle.Delta = cycle.Delta;
+                        fullCycle.Fio = cycle.Event.Fio;
+                        fullCycle.Position = cycle.Event.Position;
+                        fullCycles.Add(fullCycle);
+                    }
+                    return fullCycles;
                 }
             }
             catch(Exception ex)
