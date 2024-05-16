@@ -33,61 +33,15 @@ namespace ACS_API.Controllers
             return await _context.Offenders.ToListAsync();
         }
 
-        // GET: api/Offenders/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Offender>> GetOffender(int id)
-        {
-            if (_context.Offenders == null)
-            {
-                return NotFound();
-            }
-            var offender = await _context.Offenders.FindAsync(id);
-
-            if (offender == null)
-            {
-                return NotFound();
-            }
-
-            return offender;
-        }
-
-        // PUT: api/Offenders/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOffender(int id, Offender offender)
-        {
-            if (id != offender.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(offender).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OffenderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        
         [HttpPost("CreateOffender")]
         public async Task<ActionResult<Offender>> CreateOffender()
         {
             newListOffender = new();
             var newListEvents = _context.Events.ToList().Where(s => s.PassOrDeny == "DENY" && s.SendOrNot == 0);
-
-            if(newListEvents.Count() != 0 || newListEvents != null)
+            var deadLine = new TimeSpan(0, 5, 00);
+            var newListCycle = _context.Cycles.ToList().Where(s => s.Delta > deadLine && s.SendOrNot == 0);
+            if (newListEvents.Count() != 0 || newListEvents != null)
             {
                 foreach (var events in newListEvents)
                 {
@@ -101,27 +55,26 @@ namespace ACS_API.Controllers
                         newOffender = new Offender() { Name = "Неизвестно", Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
                     }
                     newListOffender.Add(newOffender);
+                    await _context.SaveChangesAsync();
                 }
-                
+                foreach (var cycle in newListCycle)
+                {
+                    cycle.SendOrNot = 1;
+                    if (!string.IsNullOrEmpty(cycle.Event.Fio))
+                    {
+                        newOffender = new Offender() { Name = cycle.Event.Fio, Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
+                    }
+                    else
+                    {
+                        newOffender = new Offender() { Name = "Неизвестно", Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
+                    }
+                    newListOffender.Add(newOffender);
+                    await _context.SaveChangesAsync();
+                }
             }
             _context.Offenders.AddRange(newListOffender);
             await _context.SaveChangesAsync();
             return null;
-        }
-
-        // POST: api/Offenders
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Offender>> PostOffender(Offender offender)
-        {
-            if (_context.Offenders == null)
-            {
-                return Problem("Entity set 'AcsContext.Offenders'  is null.");
-            }
-            _context.Offenders.Add(offender);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOffender", new { id = offender.Id }, offender);
         }
 
         [HttpPost("SendOrNot")]
@@ -139,31 +92,6 @@ namespace ACS_API.Controllers
             {
                 return BadRequest($"{ex.Message}");
             }
-        }
-
-        // DELETE: api/Offenders/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOffender(int id)
-        {
-            if (_context.Offenders == null)
-            {
-                return NotFound();
-            }
-            var offender = await _context.Offenders.FindAsync(id);
-            if (offender == null)
-            {
-                return NotFound();
-            }
-
-            _context.Offenders.Remove(offender);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool OffenderExists(int id)
-        {
-            return (_context.Offenders?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
