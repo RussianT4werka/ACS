@@ -59,6 +59,7 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Циклы</h5>
+                <input type="date" id="start" name="trip-start" @onclick ="@(() => Filtr(DateFiltr))" @bind="DateFiltr" />
                 <button type="button" class="btn btn-primary">Кнопка</button>
 
             </div>
@@ -88,7 +89,18 @@
                             <td>@cycles.W26</td>
                             <td>@cycles.TimeP1</td>
                             <td>@cycles.TimeP2</td>
-                            <td>@cycles.Delta</td>
+                            @if(@cycles.Delta <= new TimeSpan(0, 5, 0))
+                            {
+                                <td>@cycles.Delta 🟢</td>
+                            }
+                            else if (@cycles.Delta > new TimeSpan(0, 5, 0) && @cycles.Delta < new TimeSpan(0, 7, 0))
+                            {
+                                <td>@cycles.Delta 🟡</td>
+                            }
+                            else if (@cycles.Delta >= new TimeSpan(0, 7, 0))
+                            {
+                                <td>@cycles.Delta 🔴</td>
+                            }
                         </tr>
                     }
                 }
@@ -103,6 +115,7 @@
 @code {
     private List<ACS_API.DTO.Cycle> Cycles = new();
     private volatile static bool workCycle = new();
+    DateTime DateFiltr = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
@@ -125,16 +138,17 @@
 
     private async Task Timer()
     {
-
-
         while (workCycle == true)
         {
-
             Cycles = await httpclient.GetFromJsonAsync<List<ACS_API.DTO.Cycle>>("Cycles/GetCycles");
 
             Thread.Sleep(1000);
         }
-        
+
+    }
+    private async Task Filtr(DateTime DateFiltr)
+    {
+        Cycles = Cycles.Where(s => s.TimeP1.Value.Month == DateFiltr.Month && s.TimeP1.Value.Day == DateFiltr.Day && s.TimeP1.Value.Year == DateFiltr.Year).ToList();
     }
 }
 

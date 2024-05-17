@@ -62,39 +62,40 @@ namespace ACS_API.Controllers
         {
             try
             {
-                var Events = await _context.Events.ToListAsync();
-                var Cycles = _context.Cycles.Include(s => s.Event).ToList();
-                foreach (var events in Events.Where(s => s.PointId == 4))
+                var EventsP1 = await _context.Events.Where(s => s.PointId == 4).ToListAsync();
+                var EventsP2 = await _context.Events.Where(s => s.PointId == 8).ToListAsync();
+                var Cycles = await _context.Cycles.Include(s => s.Event).ToListAsync();
+                foreach (var events in EventsP1)
                 {
-                    var cycleP2 = _context.Cycles.FirstOrDefault(s => s.TimeP2 == null);
+                    var cycleP2 = await _context.Cycles.FirstOrDefaultAsync(s => s.TimeP2 == null);
                     if (events != null && cycleP2 == null)
                     {
                         var lastCycle = _context.Cycles.ToList().LastOrDefault();
                         if (Cycles.Count() == 0)
                         {
                             var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
-                            _context.Cycles.Add(newCycle);
-                            _context.SaveChanges();
+                            await _context.Cycles.AddAsync(newCycle);
+                            await _context.SaveChangesAsync();
                             return Ok();
                         }
                         bool aa = Cycles.Any(s => s.EventId == events.Id);
                         if (lastCycle.EventId != events.Id && aa == false)
                         {
                             var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
-                            _context.Cycles.Add(newCycle);
-                            _context.SaveChanges();
+                            await _context.Cycles.AddAsync(newCycle);
+                            await _context.SaveChangesAsync();
                             return Ok();
                         }
                     }
                     else
                     {
-                        var ff = _context.Cycles.FirstOrDefault(s => s.TimeP2 == null);
+                        var ff = await _context.Cycles.FirstOrDefaultAsync(s => s.TimeP2 == null);
 
                         if (ff != null)
                         {
-                            foreach (var events2 in Events.Where(s => s.PointId == 8 && s.W26 == ff.W26))
+                            foreach (var events2 in EventsP2.Where( s => s.W26 == ff.W26))
                             {
-                                bool gg = _context.Cycles.Any(s => s.TimeP1 > Convert.ToDateTime(events2.Time));
+                                bool gg = await _context.Cycles.AnyAsync(s => s.TimeP1 > Convert.ToDateTime(events2.Time));
                                 if (gg == false)
                                 {
                                     foreach (var cycle in Cycles.Where(s => s.TimeP1 != null && s.TimeP2 == null && s.W26 == events2.W26))
@@ -102,7 +103,7 @@ namespace ACS_API.Controllers
                                         cycle.TimeP2 = Convert.ToDateTime(events2.Time);
                                         cycle.Delta = cycle.TimeP2 - cycle.TimeP1;
                                         _context.Cycles.Update(cycle);
-                                        _context.SaveChanges();
+                                        await _context.SaveChangesAsync();
                                     }
                                 }
 
