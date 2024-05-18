@@ -23,38 +23,71 @@ namespace ACS_API.Controllers
         }
 
         [HttpGet("GetCycles")]
-        public async Task<ActionResult<List<ACS_API.DTO.Cycle>>> GetCycles()
+        public async Task<ActionResult<List<ACS_API.DTO.Cycle>>> GetCycles(DateTime DateFiltr)
         {
             try
             {
-                var Cycle = await _context.Cycles.Include( s => s.Event).ToListAsync();
-                
-                if (Cycle == null)
+                if (_context.Cycles == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    foreach (var cycle in Cycle)
+                    if (DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
                     {
-                        fullCycle = new();
-                        fullCycle.W26 = cycle.W26;
-                        fullCycle.TimeP1 = cycle.TimeP1;
-                        fullCycle.TimeP2 = cycle.TimeP2;
-                        fullCycle.Delta = cycle.Delta;
-                        fullCycle.Fio = cycle.Event.Fio;
-                        fullCycle.Position = cycle.Event.Position;
-                        fullCycles.Add(fullCycle);
+                        var Cycle = await _context.Cycles.Include(s => s.Event).ToListAsync();
+
+                        if (Cycle == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            foreach (var cycle in Cycle)
+                            {
+                                fullCycle = new();
+                                fullCycle.W26 = cycle.W26;
+                                fullCycle.TimeP1 = cycle.TimeP1;
+                                fullCycle.TimeP2 = cycle.TimeP2;
+                                fullCycle.Delta = cycle.Delta;
+                                fullCycle.Fio = cycle.Event.Fio;
+                                fullCycle.Position = cycle.Event.Position;
+                                fullCycles.Add(fullCycle);
+                            }
+                            return fullCycles;
+                        }
                     }
-                    return fullCycles;
+                    else
+                    {
+                        var Cycle = await _context.Cycles.Include(s => s.Event).Where(s => s.TimeP1.Value.Day == DateFiltr.Day && s.TimeP1.Value.Month == DateFiltr.Month && s.TimeP1.Value.Year == DateFiltr.Year).ToListAsync();
+
+                        if (Cycle == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            foreach (var cycle in Cycle)
+                            {
+                                fullCycle = new();
+                                fullCycle.W26 = cycle.W26;
+                                fullCycle.TimeP1 = cycle.TimeP1;
+                                fullCycle.TimeP2 = cycle.TimeP2;
+                                fullCycle.Delta = cycle.Delta;
+                                fullCycle.Fio = cycle.Event.Fio;
+                                fullCycle.Position = cycle.Event.Position;
+                                fullCycles.Add(fullCycle);
+                            }
+                            return fullCycles;
+                        }
+                    }
+
                 }
-            }
+            }  
             catch(Exception ex)
             {
                 return BadRequest(ex);
             }
-            
-            
         }
 
         [HttpPost("CreateCycle")]

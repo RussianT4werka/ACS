@@ -57,7 +57,10 @@
     <nav class="navbar sticky-top">
         <div class="container-fluid">
         <h5 style="font-size: 130%" class="fw-bold text-white">События</h5>
-            <button type="button" class="btn btn-primary">Кнопка</button>
+                <div>
+                    <input type="date" id="start" name="trip-start" @bind="DateFiltr" />
+                    <a class="btn btn-primary" @onclick="@(() => CyclesAll())">Показать все</a>
+                </div>
         </div>
     </nav>
         <table id="table">
@@ -141,6 +144,7 @@
 @code {
     private List<Event> Events = new();
     private volatile static bool workCycle = new();
+    private DateTime DateFiltr = DateTime.Now;
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
@@ -162,9 +166,12 @@
     {
         while (workCycle == true)
         {
-            Events = await httpclient.GetFromJsonAsync<List<Event>>("Events/GetListEvents");
-            Events.Reverse();
+            Events = await httpclient.GetFromJsonAsync<List<Event>>($"Events/GetListEvents?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss.fff")}");
             Thread.Sleep(1000);
         }
+    }
+    private async Task CyclesAll()
+    {
+        DateFiltr = new();
     }
 }

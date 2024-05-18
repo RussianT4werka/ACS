@@ -10,6 +10,7 @@ using System.Text.Json;
 using ACS_API.Tools;
 using Azure;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ACS_API.Controllers
 {
@@ -24,7 +25,6 @@ namespace ACS_API.Controllers
         {
             _context = context;
         }
-          
 
         /*[HttpPost("GetEvent")]  //Метод принятия проходов Web-Del
         public async Task<IActionResult> GetEvent([FromBody]object jsonSigur) //Нужно получать именно тело object, потому что из-за остальных типов он игнорит метод
@@ -40,13 +40,34 @@ namespace ACS_API.Controllers
         }*/
         
         [HttpGet("GetListEvents")]
-        public async Task<ActionResult<IEnumerable<Event>>> GetListEvents()
+        public async Task<ActionResult<List<Event>>> GetListEvents(DateTime DateFiltr)
         {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            return await _context.Events.ToListAsync();
+            try 
+            { 
+                if (_context.Events == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    if(DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
+                    {
+                        return await _context.Events.ToListAsync();
+                    }
+                    else
+                    {
+                        //string formattedDate = $"{DateFiltr:yyyy-MM-dd HH:mm:ss}";
+                        return await _context.Events.Where(s => Convert.ToDateTime(s.Time).Day == DateFiltr.Day &&
+                        Convert.ToDateTime(s.Time).Month == DateFiltr.Month &&
+                        Convert.ToDateTime(s.Time).Year == DateFiltr.Year).ToListAsync();
+                    }
+                }
+
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("GetEvent")]
@@ -60,21 +81,6 @@ namespace ACS_API.Controllers
             {
                 return NotFound();
             }
-        }
-
-        // POST: api/Events
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event @event)
-        {
-          if (_context.Events == null)
-          {
-              return Problem("Entity set 'AcsContext.Events'  is null.");
-          }
-            _context.Events.Add(@event);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEvent", new { id = @event.Id }, @event);
         }
     }
 }
