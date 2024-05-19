@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryBD.BD;
-using ACS_API.Model;
 using ACS_API.Tools;
 using Humanizer;
+using ACS_API.DTO;
 
 namespace ACS_API.Controllers
 {
@@ -54,6 +54,7 @@ namespace ACS_API.Controllers
 
                 await _context.Admins.AddAsync(newAdmin);
                 await _context.SaveChangesAsync();
+                Mail.SendEmailAsync(user.Email);
                 return Ok(newAdmin.Id);
             }
             catch (Exception ex)

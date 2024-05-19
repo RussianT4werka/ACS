@@ -1,4 +1,4 @@
-﻿namespace ACS_API.Model
+﻿namespace ACS_API.DTO
 {
     public class UserData
     {
