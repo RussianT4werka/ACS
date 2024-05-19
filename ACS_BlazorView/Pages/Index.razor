@@ -67,7 +67,6 @@
 
     <p>
         <button  class="btn btn-success" type="submit">Авторизация</button>
-        <a  class="btn btn-primary" href="registration">Регистрация</a>
     </p>
     
 </EditForm>
@@ -99,7 +98,7 @@
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/TelegramBotPage");
+            nav.NavigateTo("/EventsPage");
         }
         else
         {

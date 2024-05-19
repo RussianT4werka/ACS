@@ -20,19 +20,23 @@ namespace ACS_API.Controllers
             _context = context;
         }
 
-        // GET: api/VideoStreams
         [HttpGet("GetVideoStreams")]
         public async Task<ActionResult<List<VideoStream>>> GetVideoStreams()
         {
-          if (_context.VideoStreams == null)
-          {
-              return NotFound();
-          }
-            return await _context.VideoStreams.ToListAsync();
+            try
+            {
+                if (_context.VideoStreams == null)
+                {
+                    return NotFound();
+                }
+                return await _context.VideoStreams.ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/VideoStreams
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("AddStream")]
         public async Task<ActionResult<VideoStream>> AddStream(VideoStream videoStream)
         {

@@ -22,59 +22,100 @@ namespace ACS_API.Controllers
             _context = context;
         }
 
-        // GET: api/Offenders
         [HttpGet("GetOffenders")]
-        public async Task<List<Offender>> GetOffenders()
+        public async Task<ActionResult<List<Offender>>> GetOffenders()
         {
-            if (_context.Offenders == null)
+            try
             {
-                return null;
+                if (_context.Offenders == null)
+                {
+                    return null;
+                }
+                return await _context.Offenders.ToListAsync();
             }
-            return await _context.Offenders.ToListAsync();
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
-        
+        [HttpGet("GetOffendersForPage")]
+        public async Task<ActionResult<List<Offender>>> GetOffendersForPage(DateTime DateFiltr)
+        {
+            try
+            {
+                if (_context.Offenders == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
+                    {
+                        return await _context.Offenders.ToListAsync();
+                    }
+                    else
+                    {
+                        return await _context.Offenders.Where( s => s.Time.Value.Day == DateFiltr.Day && s.Time.Value.Month == DateFiltr.Month && s.Time.Value.Year == DateFiltr.Year).ToListAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         [HttpPost("CreateOffender")]
         public async Task<ActionResult<Offender>> CreateOffender()
         {
-            newListOffender = new();
-            var newListEvents = _context.Events.ToList().Where(s => s.PassOrDeny == "DENY" && s.SendOrNot == 0);
-            var deadLine = new TimeSpan(0, 5, 00);
-            var newListCycle = _context.Cycles.ToList().Where(s => s.Delta > deadLine && s.SendOrNot == 0);
-            if (newListEvents.Count() != 0 || newListEvents != null)
+            try
             {
-                foreach (var events in newListEvents)
+                newListOffender = new();
+                var newListEvents = _context.Events.ToList().Where(s => s.PassOrDeny == "DENY" && s.SendOrNot == 0);
+                var deadLine = new TimeSpan(0, 5, 00);
+                var newListCycle = _context.Cycles.ToList().Where(s => s.Delta > deadLine && s.SendOrNot == 0);
+                if (newListEvents.Count() != 0 || newListEvents != null)
                 {
-                    events.SendOrNot = 1;
-                    if (!string.IsNullOrEmpty(events.Fio))
+                    foreach (var events in newListEvents)
                     {
-                        newOffender = new Offender() { Name = events.Fio, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                        events.SendOrNot = 1;
+                        if (!string.IsNullOrEmpty(events.Fio))
+                        {
+                            newOffender = new Offender() { Name = events.Fio, Position = events.Position, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                        }
+                        else
+                        {
+                            newOffender = new Offender() { Name = "Неизвестно", Position = events.Position, Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                        }
+                        newListOffender.Add(newOffender);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    foreach (var cycle in newListCycle)
                     {
-                        newOffender = new Offender() { Name = "Неизвестно", Dec = events.Dec, W26 = events.W26, Hex = events.Hex, Time = Convert.ToDateTime(events.Time) };
+                        cycle.SendOrNot = 1;
+                        if (!string.IsNullOrEmpty(cycle.Event.Fio))
+                        {
+                            newOffender = new Offender() { Name = cycle.Event.Fio, Position = cycle.Event.Position, Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
+                        }
+                        else
+                        {
+                            newOffender = new Offender() { Name = "Неизвестно", Position = cycle.Event.Position, Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
+                        }
+                        newListOffender.Add(newOffender);
+                        await _context.SaveChangesAsync();
                     }
-                    newListOffender.Add(newOffender);
-                    await _context.SaveChangesAsync();
                 }
-                foreach (var cycle in newListCycle)
-                {
-                    cycle.SendOrNot = 1;
-                    if (!string.IsNullOrEmpty(cycle.Event.Fio))
-                    {
-                        newOffender = new Offender() { Name = cycle.Event.Fio, Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
-                    }
-                    else
-                    {
-                        newOffender = new Offender() { Name = "Неизвестно", Dec = cycle.Event.Dec, W26 = cycle.Event.W26, Hex = cycle.Event.Hex, Time = Convert.ToDateTime(cycle.TimeP2) };
-                    }
-                    newListOffender.Add(newOffender);
-                    await _context.SaveChangesAsync();
-                }
+                _context.Offenders.AddRange(newListOffender);
+                await _context.SaveChangesAsync();
+                return null;
             }
-            _context.Offenders.AddRange(newListOffender);
-            await _context.SaveChangesAsync();
-            return null;
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("SendOrNot")]

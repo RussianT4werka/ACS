@@ -22,7 +22,7 @@ namespace ACS_API
         private static TelegramBotClient client;
         private static Log log;
         static HttpClient httpClient = new HttpClient();
-        private static List<SubscriberTelegramBot> ListSub { get; set; }
+        private static List<SubscriberTelegramBot> ListSub { get; set; } = new();
         private static List<Offender> ListOffendersNotSend { get; set; }
         public static void Main(string[] args)
         {
@@ -88,7 +88,6 @@ namespace ACS_API
         async static Task UpdateM(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
             ListOffendersNotSend = new();
-            ListSub = new();
             SubscriberTelegramBot SubscriberTelegramBot;
             try
             {
@@ -179,7 +178,7 @@ namespace ACS_API
                         }
                         else
                         {
-                            foreach (var sub in ListSub.ToList())
+                            foreach (var sub in ListSub)
                             {
                                 await client.SendTextMessageAsync(
                                 chatId: sub.ChatId,
@@ -190,7 +189,8 @@ namespace ACS_API
                                 Console.WriteLine(log.Title);
                             }
                             log = new Log() { Title = $"Уведомление отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
-                            httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+                            ListSub.Clear();
+                            await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
                             Console.WriteLine(log.Title);
 
                         }

@@ -24,83 +24,112 @@ namespace ACS_API.Controllers
         [HttpGet("GetPersonals")]
         public async Task<ActionResult<List<Personal>>> GetPersonals()
         {
-            if (_context.Personals == null)
+            try
             {
-                return NotFound();
+                if (_context.Personals == null)
+                {
+                    return NotFound();
+                }
+                return await _context.Personals.ToListAsync();
             }
-            return await _context.Personals.ToListAsync();
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPost("EditPersonal")]
         public async Task<ActionResult> EditPersonal(Personal personal)
         {
-            if (personal == null)
+            try
             {
-                return BadRequest();
-            }
-            else
-            {
-                try
-                {
-                    var editPers = _context.Personals.FirstOrDefault(s => s.Id == personal.Id);
-                    editPers.Fio = personal.Fio;
-                    editPers.Department = personal.Department;
-                    editPers.Position = personal.Position;
-                    editPers.W26 = personal.W26;
-
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-                catch
+                if (personal == null)
                 {
                     return BadRequest();
                 }
+                else
+                {
+                    try
+                    {
+                        var editPers = _context.Personals.FirstOrDefault(s => s.Id == personal.Id);
+                        editPers.Fio = personal.Fio;
+                        editPers.Department = personal.Department;
+                        editPers.Position = personal.Position;
+                        editPers.W26 = personal.W26;
+
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch(Exception ex) 
+            { 
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("CreatePersonal")]
         public async Task<ActionResult> CreatePersonal(Personal personal)
         {
-            if (personal == null)
+            try
             {
-                return BadRequest();
-            }
-            else
-            {
-                try
-                {
-                    var Pers = new Personal() { Fio = personal.Fio, Department = personal.Department, Position = personal.Position, W26 = personal.W26 };
-                    _context.Personals.Add(Pers);
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-                catch
+                if (personal == null)
                 {
                     return BadRequest();
                 }
+                else
+                {
+                    try
+                    {
+                        var Pers = new Personal() { Fio = personal.Fio, Department = personal.Department, Position = personal.Position, W26 = personal.W26 };
+                        _context.Personals.Add(Pers);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("DelPers")]
         public async Task<ActionResult> DelPers(Personal personal)
         {
-            if (personal == null)
+            try
             {
-                return BadRequest();
-            }
-            else
-            {
-                try
-                {
-                    var editPers = _context.Personals.FirstOrDefault(s => s.Id == personal.Id);
-                    _context.Personals.Remove(editPers);
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-                catch
+                if (personal == null)
                 {
                     return BadRequest();
                 }
+                else
+                {
+                    try
+                    {
+                        var editPers = _context.Personals.FirstOrDefault(s => s.Id == personal.Id);
+                        _context.Personals.Remove(editPers);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                    catch(Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

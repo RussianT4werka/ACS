@@ -44,6 +44,9 @@ namespace ACS_API.Controllers
 
                 Admin newAdmin = new Admin
                 {
+                    Surname = user.Surname,
+                    Name = user.Name,
+                    Patronymic = user.Patronymic,
                     Login = user.Login,
                     Password = hashPass,
                     Email = user.Email,

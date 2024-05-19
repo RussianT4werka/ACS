@@ -57,7 +57,10 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Нарушители</h5>
-                <button type="button" class="btn btn-primary">Кнопка</button>
+                <div>
+                    <input type="date" id="start" name="trip-start" @bind="DateFiltr" />
+                    <a class="btn btn-primary" @onclick="@(() => OffendersAll())">Показать все</a>
+                </div>
 
             </div>
         </nav>
@@ -108,6 +111,7 @@
 @code {
     private List<Offender> Offenders = new();
     private volatile static bool workCycle = new();
+    private DateTime DateFiltr = DateTime.Now;
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
@@ -129,9 +133,13 @@
     {
         while (workCycle == true)
         {
-            Offenders = await httpclient.GetFromJsonAsync<List<Offender>>("Offenders/GetOffenders");
-            Offenders.Reverse();
+            Offenders = await httpclient.GetFromJsonAsync<List<Offender>>($"Offenders/GetOffendersForPage?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
             Thread.Sleep(1000);
         }
+    }
+
+    private async Task OffendersAll()
+    {
+        DateFiltr = new();
     }
 }

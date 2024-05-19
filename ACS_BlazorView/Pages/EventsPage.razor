@@ -59,7 +59,7 @@
         <h5 style="font-size: 130%" class="fw-bold text-white">События</h5>
                 <div>
                     <input type="date" id="start" name="trip-start" @bind="DateFiltr" />
-                    <a class="btn btn-primary" @onclick="@(() => CyclesAll())">Показать все</a>
+                    <a class="btn btn-primary" @onclick="@(() => EventsAll())">Показать все</a>
                 </div>
         </div>
     </nav>
@@ -166,11 +166,11 @@
     {
         while (workCycle == true)
         {
-            Events = await httpclient.GetFromJsonAsync<List<Event>>($"Events/GetListEvents?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss.fff")}");
+            Events = await httpclient.GetFromJsonAsync<List<Event>>($"Events/GetListEvents?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
             Thread.Sleep(1000);
         }
     }
-    private async Task CyclesAll()
+    private async Task EventsAll()
     {
         DateFiltr = new();
     }

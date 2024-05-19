@@ -21,7 +21,6 @@ namespace ACS_API.Controllers
             _context = context;
         }
 
-        // GET: api/SubscriberTelegramBots
         [HttpGet("GetListSubscribers")]
         public async Task<ActionResult<IEnumerable<SubscriberTelegramBot>>> GetListSubscribers()
         {
@@ -69,18 +68,26 @@ namespace ACS_API.Controllers
         [HttpGet("GetSubscriber")]
         public async Task<ActionResult<int?>> GetSubscriber(string id)
         {
-            if (_context.SubscriberTelegramBots == null)
+            try
             {
-                return NotFound();
-            }
-            var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == id);
+                if (_context.SubscriberTelegramBots == null)
+                {
+                    return NotFound();
+                }
+                var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == id);
 
-            if (subscriberTelegramBot == null)
+                if (subscriberTelegramBot == null)
+                {
+                    return NotFound();
+                }
+
+                return subscriberTelegramBot.SubscribeOrNot;
+            }
+            catch (Exception ex) 
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            return subscriberTelegramBot.SubscribeOrNot;
+            
         }
 
         [HttpGet("GetSubscriberCheckNull")]

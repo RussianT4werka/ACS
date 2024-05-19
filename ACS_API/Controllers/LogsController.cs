@@ -20,19 +20,35 @@ namespace ACS_API.Controllers
             _context = context;
         }
 
-        // GET: api/Logs
         [HttpGet("GetListLogs")]
-        public async Task<ActionResult<IEnumerable<Log>>> GetLogs()
+        public async Task<ActionResult<List<Log>>> GetLogs(DateTime DateFiltr)
         {
-          if (_context.Logs == null)
-          {
-              return NotFound();
-          }
-            return await _context.Logs.ToListAsync();
+            try
+            {
+                if (_context.Logs == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    if (DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
+                    {
+                        return await _context.Logs.ToListAsync();
+                    }
+                    else
+                    {
+                        return await _context.Logs.Where(s => s.DateTime.Date == DateFiltr.Date).ToListAsync();
+                    }
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
-        // POST: api/Logs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("WriteLog")]
         public async Task<ActionResult> WriteLog(Log log)
         {
@@ -43,7 +59,7 @@ namespace ACS_API.Controllers
             }
             catch(Exception ex)
             { 
-                BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
             return NoContent();
         }

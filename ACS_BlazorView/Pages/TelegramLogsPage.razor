@@ -57,6 +57,10 @@
         <nav class="navbar sticky-top">
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Логи</h5>
+                <div>
+                    <input type="date" id="start" name="trip-start" @bind="DateFiltr" />
+                    <a class="btn btn-primary" @onclick="@(() => LogsAll())">Показать все</a>
+                </div>
                 <a @onclick="@(() => DeleteLogs())" class="btn btn-danger">Очистить логи</a>
 
             </div>
@@ -92,6 +96,7 @@
 
     private List<Log> Logs = new();
     private volatile static bool workCycle = new();
+    private DateTime DateFiltr = DateTime.Now;
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
@@ -106,10 +111,14 @@
     {
         while (workCycle == true)
         {
-            Logs = await httpclient.GetFromJsonAsync<List<Log>>("Logs/GetListLogs");
-            Logs.Reverse();
+            Logs = await httpclient.GetFromJsonAsync<List<Log>>($"Logs/GetListLogs?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
             Thread.Sleep(1000);
         }
+    }
+
+    private async Task LogsAll()
+    {
+        DateFiltr = new();
     }
 
     async Task DeleteLogs()

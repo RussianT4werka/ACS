@@ -40,8 +40,8 @@ namespace ACS_API.Controllers
         }*/
         
         [HttpGet("GetListEvents")]
-        public async Task<ActionResult<List<Event>>> GetListEvents(DateTime DateFiltr)
-        {
+        public async Task<ActionResult<List<Event>>> GetListEvents(string DateFiltr)
+        { // "2024-05-18 00:00:00" = "0001-01-01 00:00:00"
             try 
             { 
                 if (_context.Events == null)
@@ -50,36 +50,42 @@ namespace ACS_API.Controllers
                 }
                 else
                 {
-                    if(DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
+                    if(Convert.ToDateTime(DateFiltr).Day == 01 && Convert.ToDateTime(DateFiltr).Month == 01 && Convert.ToDateTime(DateFiltr).Year == 0001 && Convert.ToDateTime(DateFiltr).Hour == 0 && Convert.ToDateTime(DateFiltr).Minute == 00 && Convert.ToDateTime(DateFiltr).Second == 00)
                     {
                         return await _context.Events.ToListAsync();
                     }
                     else
                     {
-                        //string formattedDate = $"{DateFiltr:yyyy-MM-dd HH:mm:ss}";
-                        return await _context.Events.Where(s => Convert.ToDateTime(s.Time).Day == DateFiltr.Day &&
-                        Convert.ToDateTime(s.Time).Month == DateFiltr.Month &&
-                        Convert.ToDateTime(s.Time).Year == DateFiltr.Year).ToListAsync();
+                        var listEvent = await _context.Events.ToListAsync();
+                        var filtrListEvent = listEvent.Where(s => Convert.ToDateTime(s.Time).Date == Convert.ToDateTime(DateFiltr).Date).ToList();
+                        return filtrListEvent;
                     }
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex);
             }
         }
 
         [HttpGet("GetEvent")]
         public async Task<ActionResult<Event>> GetEvent(int id)
         {
-            if(id != null)
+            try
             {
-                return await _context.Events.FirstOrDefaultAsync( s => s.Id == id);
+                if (id != null)
+                {
+                    return await _context.Events.FirstOrDefaultAsync(s => s.Id == id);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
         }
     }
