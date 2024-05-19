@@ -77,7 +77,6 @@ public partial class AcsContext : DbContext
             entity.Property(e => e.PointId).HasDefaultValueSql("((0))");
             entity.Property(e => e.Position).HasMaxLength(100);
             entity.Property(e => e.Time).HasMaxLength(50);
-            entity.Property(e => e.TimeConverted).HasColumnType("datetime");
             entity.Property(e => e.W26).HasMaxLength(50);
         });
 
