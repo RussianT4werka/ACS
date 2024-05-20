@@ -54,7 +54,7 @@ namespace ACS_API.Controllers
 
                 await _context.Admins.AddAsync(newAdmin);
                 await _context.SaveChangesAsync();
-                Mail.SendEmailAsync(user.Email);
+                await Mail.SendEmailAsync(user.Email, user.Login, user.Password);
                 return Ok(newAdmin.Id);
             }
             catch (Exception ex)
@@ -67,27 +67,39 @@ namespace ACS_API.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(user.Login) ||
-                    string.IsNullOrWhiteSpace(user.Password))
-                    return BadRequest("Не все поля заполнены. Введите логин и пароль.");
-
-                var findUser = await _context.Admins.FirstOrDefaultAsync(s => s.Login == user.Login);
-                if (findUser == null)
-                    return BadRequest("Логина не существует. Убедитесь в правильности введённого логина или зарегистрируйтесь.");
-
-                string hashPass = Hash.HashPassword(user);
-                if (findUser.Password != hashPass)
-                    return BadRequest("Пароль для аккаунта неверный");
-
-
-                if (!string.IsNullOrWhiteSpace(user.Login) &&
-                    !string.IsNullOrWhiteSpace(user.Password) &&
-                    findUser.Login != null && findUser.Password == hashPass)
+                if (string.IsNullOrWhiteSpace(user.Login) || string.IsNullOrWhiteSpace(user.Password))
                 {
-                    return Ok(findUser.Id);
+                    return BadRequest("Не все поля заполнены. Введите логин и пароль.");
                 }
+                else
+                {
+                    var findUser = await _context.Admins.FirstOrDefaultAsync(s => s.Login == user.Login);
+                    if (findUser == null)
+                    {
+                        return BadRequest("Логина не существует. Убедитесь в правильности введённого логина или свяжитесь с администратором.");
+                    }
+                    else
+                    {
+                        string hashPass = Hash.HashPassword(user);
+                        if (findUser.Password != hashPass)
+                        {
+                            return BadRequest("Пароль для аккаунта неверный");
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(user.Login) &&
+                            !string.IsNullOrWhiteSpace(user.Password) &&
+                            findUser.Login != null && findUser.Password == hashPass)
+                            {
+                                return Ok(findUser.Id);
+                            }
 
-                return Ok(findUser.Id);
+                            return NoContent();
+                        }
+
+                        
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -95,6 +107,64 @@ namespace ACS_API.Controllers
             }
         }
 
-        
+        [HttpGet("GetAdminInfo")]
+        public async Task<ActionResult<DTO.UserData>> GetAdminInfo(int id)
+        {
+            try
+            {
+                var user = await _context.Admins.
+                    FirstOrDefaultAsync(s => s.Id == id);
+                if (user == null)
+                    return NotFound();
+
+                UserData userDTO = new() {Id = user.Id, Name = user.Name, Surname = user.Surname, Patronymic = user.Patronymic,
+                                            Email = user.Email, Login = user.Login, Password = user.Password};
+                return Ok(userDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
+        }
+
+        [HttpPost("EditAdmin")]
+        public async Task<ActionResult> EditAdmin([FromBody] UserData userData)
+        {
+            try
+            {
+                if (userData != null)
+                {
+                    var user = await _context.Admins.FirstOrDefaultAsync(s => s.Id == userData.Id);
+                    if(user != null && userData.Password != user.Password)
+                    {
+                        user.Name = userData.Name;
+                        user.Surname = userData.Surname;
+                        user.Patronymic = userData.Patronymic;
+                        user.Login = userData.Login;
+                        string hashPass = Hash.HashPassword(userData);
+                        user.Password = hashPass;
+                        _context.SaveChanges();
+                        return Ok();
+                    }
+                    else
+                    {
+                        user.Name = userData.Name;
+                        user.Surname = userData.Surname;
+                        user.Patronymic = userData.Patronymic;
+                        user.Login = userData.Login;
+                        _context.SaveChanges();
+                        return Ok();
+                    }
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

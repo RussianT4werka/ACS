@@ -4,7 +4,6 @@ using Telegram.Bot.Polling;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Microsoft.IdentityModel.Tokens;
-using LibraryBD.BD;
 using System.Net.Http.Json;
 using Update = Telegram.Bot.Types.Update;
 using Telegram.Bot.Types.ReplyMarkups;

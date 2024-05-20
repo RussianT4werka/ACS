@@ -21,5 +21,7 @@ public partial class Personal
 
     public string? Hex { get; set; }
 
-    public virtual ICollection<Log> Logs { get; set; } = new List<Log>();
+    public int? AdminId { get; set; }
+
+    public virtual Admin? Admin { get; set; }
 }

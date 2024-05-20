@@ -33,7 +33,7 @@ public partial class AcsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;TrustServerCertificate=true;Trusted_Connection=true;");
+        => optionsBuilder.UseSqlServer("server=10.10.1.102;database=ACS;TrustServerCertificate=true;Trusted_Connection=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,14 +86,6 @@ public partial class AcsContext : DbContext
 
             entity.Property(e => e.DateTime).HasColumnType("datetime");
             entity.Property(e => e.Title).HasColumnType("text");
-
-            entity.HasOne(d => d.Admin).WithMany(p => p.Logs)
-                .HasForeignKey(d => d.AdminId)
-                .HasConstraintName("FK_Log_Admin");
-
-            entity.HasOne(d => d.Personal).WithMany(p => p.Logs)
-                .HasForeignKey(d => d.PersonalId)
-                .HasConstraintName("FK_Log_Personal");
         });
 
         modelBuilder.Entity<Offender>(entity =>
@@ -123,6 +115,10 @@ public partial class AcsContext : DbContext
             entity.Property(e => e.W26)
                 .HasMaxLength(32)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Admin).WithMany(p => p.Personals)
+                .HasForeignKey(d => d.AdminId)
+                .HasConstraintName("FK_Personal_Admin");
         });
 
         modelBuilder.Entity<SubscriberTelegramBot>(entity =>

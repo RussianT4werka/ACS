@@ -1,0 +1,150 @@
+﻿@page "/AboutAdminPage"
+@inject NavigationManager nav;
+@inject ProtectedSessionStorage storage;
+@inject SessionManager manager;
+@inject HttpClient httpclient;
+@using ACS_API.DTO;
+@using ACS_BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+<style>
+    .ali {
+        margin-top: 5%;
+        margin-left: 15%;
+        vertical-align: central;
+    }
+
+    .password {
+        width: 300px;
+        margin-bottom: 2%;
+        position: relative;
+    }
+
+    #password-input {
+        width: 100%;
+        padding: 5px 0;
+        height: 30px;
+        line-height: 40px;
+        text-indent: 10px;
+        margin: 0 0 15px 0;
+        border-radius: 5px;
+        border: 1px solid #999;
+        font-size: 18px;
+    }
+
+    .password-control {
+        position: absolute;
+        top: 10px;
+        right: 6px;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url(https://snipp.ru/demo/495/view.svg) 0 0 no-repeat;
+    }
+
+        .password-control.view {
+            background: url(https://snipp.ru/demo/495/no-view.svg) 0 0 no-repeat;
+        }
+
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+</style>
+<PageTitle>Данные об аккаунте</PageTitle>
+<CascadingAuthenticationState>
+    <AuthorizeView Context="editContext">
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%" class="fw-bold text-white">Аккаунт</h5>
+
+                 <a class="btn btn-primary">Кнопка)</a>
+
+            </div>
+        </nav>
+        <EditForm class="ali" Model="@userData" OnSubmit="EditAdmin">
+            <h1 style="margin-bottom: 10%">Данные администратора</h1>
+            <h4>Фамилия</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите фамилию" @bind="userData.Surname">
+            </div>
+            <h4>Имя</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите имя" @bind="userData.Name">
+            </div>
+            <h4>Отчество</h4>
+            <div class="password">
+                <input type="login" class="form-control" placeholder="Введите отчество" @bind="userData.Patronymic">
+            </div>
+            <h4>Email</h4>
+            <div class="password">
+                <input type="email" class="form-control" placeholder="Введите эл. почту" disabled @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <h4>Логин</h4>
+            <div class="password">
+                <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
+            </div>
+
+            <h4>Пароль</h4>
+            <div class="password">
+                <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Измените пароль" name="password">
+                <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+            </div>
+
+            <p>
+                <label style="color: red">@message</label>
+            </p>
+
+            <p>
+                <button class="btn btn-success" type="submit">Изменить сотрудника</button>
+            </p>
+        </EditForm>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    UserData userData = new();
+    string message = "";
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var session = await storage.GetAsync<string>("session");
+            if (session.Success)
+            {
+                var id = manager.GetUserId(session.Value!);
+                userData.Id = id;
+                userData = await httpclient.GetFromJsonAsync<UserData>($"Admins/GetAdminInfo?id={id}");
+            }
+        }
+        catch
+        {
+            message = "Упс... Что-то пошло не так";
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task EditAdmin()
+    {
+        if (!string.IsNullOrEmpty(userData.Email) || !string.IsNullOrEmpty(userData.Login) || !string.IsNullOrEmpty(userData.Password))
+        {
+            var answer = await httpclient.PostAsJsonAsync("Admins/EditAdmin", userData);
+            if (answer.IsSuccessStatusCode)
+            {
+                message = "Данные успешно сохранены";
+            }
+            else
+            {
+                message = "Случилась непредвиденная ошибка";
+            }
+        }
+        else
+        {
+            message = "Поля \"Логин\", \"Email\", \"Пароль\", не должны быть пустым";
+        }
+
+    }
+}
