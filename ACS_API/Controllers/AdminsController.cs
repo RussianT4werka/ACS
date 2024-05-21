@@ -9,6 +9,7 @@ using LibraryBD.BD;
 using ACS_API.Tools;
 using Humanizer;
 using ACS_API.DTO;
+using System.Text.RegularExpressions;
 
 namespace ACS_API.Controllers
 {
@@ -17,6 +18,7 @@ namespace ACS_API.Controllers
     public class AdminsController : ControllerBase
     {
         private readonly AcsContext _context;
+        Regex regexPass = new Regex(@"^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8}$");
 
         public AdminsController(AcsContext context)
         {
@@ -135,16 +137,24 @@ namespace ACS_API.Controllers
                 if (userData != null)
                 {
                     var user = await _context.Admins.FirstOrDefaultAsync(s => s.Id == userData.Id);
-                    if(user != null && userData.Password != user.Password)
+                    var hashPass = Hash.HashPassword(userData);
+                    if (user != null && hashPass != user.Password )
                     {
-                        user.Name = userData.Name;
-                        user.Surname = userData.Surname;
-                        user.Patronymic = userData.Patronymic;
-                        user.Login = userData.Login;
-                        string hashPass = Hash.HashPassword(userData);
-                        user.Password = hashPass;
-                        _context.SaveChanges();
-                        return Ok();
+                        if (regexPass.IsMatch(userData.Password))
+                        {
+                            user.Name = userData.Name;
+                            user.Surname = userData.Surname;
+                            user.Patronymic = userData.Patronymic;
+                            user.Login = userData.Login;
+                            string hashPassword = Hash.HashPassword(userData);
+                            user.Password = hashPass;
+                            _context.SaveChanges();
+                            return Ok();
+                        }
+                        else
+                        {
+                            return BadRequest("Пароль не соответствует требованиям");
+                        }
                     }
                     else
                     {

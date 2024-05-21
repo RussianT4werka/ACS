@@ -95,7 +95,7 @@ namespace ACS_API.Controllers
         {
             try
             {
-                var EventsP1 = await _context.Events.Where(s => s.PointId == 4).ToListAsync();
+                var EventsP1 = await _context.Events.Where(s => s.PointId == 4 && s.Position != null && s.Position != "").ToListAsync();
                 var EventsP2 = await _context.Events.Where(s => s.PointId == 8).ToListAsync();
                 var Cycles = await _context.Cycles.Include(s => s.Event).ToListAsync();
                 foreach (var events in EventsP1)

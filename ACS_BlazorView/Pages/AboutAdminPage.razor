@@ -8,9 +8,9 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 <style>
     .ali {
+        display:flex;
         margin-top: 5%;
-        margin-left: 15%;
-        vertical-align: central;
+        margin-left: 5%;
     }
 
     .password {
@@ -53,6 +53,7 @@
         background-color: #ff7300;
         padding-top: 10px;
     }
+
 </style>
 <PageTitle>Данные об аккаунте</PageTitle>
 <CascadingAuthenticationState>
@@ -65,48 +66,60 @@
 
             </div>
         </nav>
-        <EditForm class="ali" Model="@userData" OnSubmit="EditAdmin">
-            <h1 style="margin-bottom: 10%">Данные администратора</h1>
-            <h4>Фамилия</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите фамилию" @bind="userData.Surname">
-            </div>
-            <h4>Имя</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите имя" @bind="userData.Name">
-            </div>
-            <h4>Отчество</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите отчество" @bind="userData.Patronymic">
-            </div>
-            <h4>Email</h4>
-            <div class="password">
-                <input type="email" class="form-control" placeholder="Введите эл. почту" disabled @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
-            </div>
-            <h4>Логин</h4>
-            <div class="password">
-                <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
-            </div>
+        <EditForm Model="@userData" OnSubmit="EditAdmin">
+            <h1 class="ali" style="margin-bottom: 5%">Данные аккаунта</h1>
+            <div class="ali container text-left">
+                <div class="row align-items-start">
+                    <div class="col-lg-6">
+                        <h4>Фамилия</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите фамилию" @bind="userData.Surname">
+                        </div>
+                        <h4>Имя</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите имя" @bind="userData.Name">
+                        </div>
+                        <h4>Отчество</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите отчество" @bind="userData.Patronymic">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4>Email</h4>
+                        <div class="password">
+                            <input type="email" class="form-control" placeholder="Введите эл. почту" disabled @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <h4>Логин</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
+                        </div>
 
-            <h4>Пароль</h4>
-            <div class="password">
-                <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Измените пароль" name="password">
-                <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+                        <h4>Пароль</h4>
+                        <div class="password">
+                            <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Измените пароль" name="password">
+                            <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+                        </div>
+                    </div>
+                    <p>
+                        <label style="color: red">@message</label>
+                    </p>
+
+                    <p>
+                        <button class="btn btn-success" type="submit">Изменить сотрудника</button>
+                    </p>
+                </div>
             </div>
+            
+            
 
-            <p>
-                <label style="color: red">@message</label>
-            </p>
-
-            <p>
-                <button class="btn btn-success" type="submit">Изменить сотрудника</button>
-            </p>
+            
         </EditForm>
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
     UserData userData = new();
     string message = "";
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -117,6 +130,7 @@
                 var id = manager.GetUserId(session.Value!);
                 userData.Id = id;
                 userData = await httpclient.GetFromJsonAsync<UserData>($"Admins/GetAdminInfo?id={id}");
+                userData.Password = "";
             }
         }
         catch
@@ -138,7 +152,7 @@
             }
             else
             {
-                message = "Случилась непредвиденная ошибка";
+                message = await answer.Content.ReadAsStringAsync();
             }
         }
         else

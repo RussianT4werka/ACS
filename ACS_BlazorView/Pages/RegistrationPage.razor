@@ -12,8 +12,9 @@
 
 <style>
     .ali {
-        margin-top: 10%;
-        margin-left: 35%;
+        display: flex;
+        margin-top: 5%;
+        margin-left: 5%;
         vertical-align: central;
     }
 
@@ -52,44 +53,50 @@
 
 <CascadingAuthenticationState>
     <AuthorizeView Context="createContext">
-        <EditForm class="ali" Model="@userData" OnSubmit="Reg">
-            <h1 style="margin-bottom: 10%">Регистрация администратора</h1>
-            <h4>Фамилия</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите фамилию" @bind="userData.Surname">
-            </div>
-            <h4>Имя</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите имя" @bind="userData.Name">
-            </div>
-            <h4>Отчество</h4>
-            <div class="password">
-                <input type="login" class="form-control" placeholder="Введите отчество" @bind="userData.Patronymic">
-            </div>
-            <h4>Email</h4>
-            <div class="password">
-                <input type="email" class="form-control" placeholder="Введите эл. почту" @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
-            </div>
-            <h4>Логин</h4>
-            <div class="password">
-                <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
-            </div>
+        <EditForm Model="@userData" OnSubmit="Reg">
+            <h1 class="ali" style="margin-bottom: 10%">Регистрация администратора</h1>
+            <div class="ali container text-left">
+                <div class="row align-items-start">
+                    <div class="col-lg-6">
+                        <h4>Фамилия</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите фамилию" @bind="userData.Surname">
+                        </div>
+                        <h4>Имя</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите имя" @bind="userData.Name">
+                        </div>
+                        <h4>Отчество</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" placeholder="Введите отчество" @bind="userData.Patronymic">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4>Email</h4>
+                        <div class="password">
+                            <input type="email" class="form-control" placeholder="Введите эл. почту" @bind="userData.Email" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <h4>Логин</h4>
+                        <div class="password">
+                            <input type="login" class="form-control" id="exampleInputEmail1" @bind="userData.Login" placeholder="Введите логин" />
+                        </div>
 
-            <h4>Пароль</h4>
-            <div class="password">
-                <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Введите пароль" name="password">
-                <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
-            </div>
+                        <h4>Пароль</h4>
+                        <div class="password">
+                            <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Введите пароль" name="password">
+                            <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+                        </div>
+                    </div>
+                    <p>
+                        <label style="color: red">@message</label>
+                    </p>
 
-            <p>
-                <label style="color: red">@message</label>
-            </p>
-    
-            <p>
-                <a class="btn btn-primary" href="/PersonalListPage">Назад</a>
-                <button class="btn btn-success" type="submit">Зарегистрировать</button>
-            </p>
-    
+                    <p>
+                        <a class="btn btn-primary" href="/PersonalListPage">Назад</a>
+                        <button class="btn btn-success" type="submit">Зарегистрировать</button>
+                    </p>
+                </div>
+            </div>
         </EditForm>
     </AuthorizeView>
 </CascadingAuthenticationState>
@@ -120,7 +127,7 @@
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
             nav.NavigateTo("/TelegramBotPage");*/
             userData = new();
-            message = "Администратор успешно добавлен";
+            message = "Новый администратор успешно добавлен";
         }
         else
         {
