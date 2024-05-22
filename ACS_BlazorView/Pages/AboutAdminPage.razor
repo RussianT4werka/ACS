@@ -41,6 +41,12 @@
         background: url(https://snipp.ru/demo/495/view.svg) 0 0 no-repeat;
     }
 
+    .warning-control {
+        position: absolute;
+        top: 8px;
+        right: -25px;
+    }
+
         .password-control.view {
             background: url(https://snipp.ru/demo/495/no-view.svg) 0 0 no-repeat;
         }
@@ -60,10 +66,7 @@
     <AuthorizeView Context="editContext">
         <nav class="navbar sticky-top">
             <div class="container-fluid">
-                <h5 style="font-size: 130%" class="fw-bold text-white">Аккаунт</h5>
-
-                 <a class="btn btn-primary">Кнопка)</a>
-
+                <h5 style="font-size: 130%; margin-top:5px;" class="fw-bold text-white">Аккаунт</h5>
             </div>
         </nav>
         <EditForm Model="@userData" OnSubmit="EditAdmin">
@@ -96,9 +99,11 @@
 
                         <h4>Пароль</h4>
                         <div class="password">
-                            <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Измените пароль" name="password">
-                            <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+                            <input type="password" class="form-control"  id="exampleInputPassword1" @bind="userData.Password" placeholder="Измените пароль" name="password">
+                            <a style="cursor:pointer" class="password-control" onclick="return show_hide_password(this);"></a>
+                            <text style="cursor:default" class="warning-control" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Пароль должен быть: &#013;- длина 8 символов &#013;- 2 буквы в верхнем регистре &#013;- 1 Специальный символ &#013;- 2 цифры (0-9) &#013;- 3 буквы в нижнем регистре">🛈</text>
                         </div>
+                        
                     </div>
                     <p>
                         <label style="color: red">@message</label>

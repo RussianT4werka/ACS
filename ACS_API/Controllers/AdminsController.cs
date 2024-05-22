@@ -138,32 +138,39 @@ namespace ACS_API.Controllers
                 {
                     var user = await _context.Admins.FirstOrDefaultAsync(s => s.Id == userData.Id);
                     var hashPass = Hash.HashPassword(userData);
-                    if (user != null && hashPass != user.Password )
+                    if (user != null)
                     {
-                        if (regexPass.IsMatch(userData.Password))
+                        if (string.IsNullOrEmpty(userData.Password))
                         {
                             user.Name = userData.Name;
                             user.Surname = userData.Surname;
                             user.Patronymic = userData.Patronymic;
                             user.Login = userData.Login;
-                            string hashPassword = Hash.HashPassword(userData);
-                            user.Password = hashPass;
                             _context.SaveChanges();
                             return Ok();
                         }
                         else
                         {
-                            return BadRequest("Пароль не соответствует требованиям");
+                            if (regexPass.IsMatch(userData.Password) && hashPass != user.Password)
+                            {
+                                user.Name = userData.Name;
+                                user.Surname = userData.Surname;
+                                user.Patronymic = userData.Patronymic;
+                                user.Login = userData.Login;
+                                string hashPassword = Hash.HashPassword(userData);
+                                user.Password = hashPass;
+                                _context.SaveChanges();
+                                return Ok();
+                            }
+                            else
+                            {
+                                return BadRequest("Пароль не соответствует требованиям");
+                            }
                         }
                     }
                     else
                     {
-                        user.Name = userData.Name;
-                        user.Surname = userData.Surname;
-                        user.Patronymic = userData.Patronymic;
-                        user.Login = userData.Login;
-                        _context.SaveChanges();
-                        return Ok();
+                        return BadRequest("user оказался пустым");
                     }
                 }
                 else

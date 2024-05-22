@@ -18,6 +18,15 @@
         vertical-align: central;
     }
 
+    .container-fluid {
+        background-color: #ff7300;
+    }
+
+    .navbar {
+        background-color: #ff7300;
+        padding-top: 10px;
+    }
+
     .password {
         width: 300px;
         margin-bottom: 2%;
@@ -53,6 +62,12 @@
 
 <CascadingAuthenticationState>
     <AuthorizeView Context="createContext">
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%; margin-top:5px;" class="fw-bold text-white">Создание администратора</h5>
+                <a class="btn btn-primary" href="/PersonalListPage">Назад</a>
+            </div>
+        </nav>
         <EditForm Model="@userData" OnSubmit="Reg">
             <h1 class="ali" style="margin-bottom: 10%">Регистрация администратора</h1>
             <div class="ali container text-left">
@@ -84,7 +99,7 @@
                         <h4>Пароль</h4>
                         <div class="password">
                             <input type="password" class="form-control" id="exampleInputPassword1" @bind="userData.Password" placeholder="Введите пароль" name="password">
-                            <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
+                            <a style="cursor:pointer" class="password-control" onclick="return show_hide_password(this);"></a>
                         </div>
                     </div>
                     <p>

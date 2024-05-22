@@ -15,11 +15,12 @@ namespace ACS_API.Tools
                 MailAddress from = new MailAddress("sanya.kokorin.04@mail.ru", "Admin");
                 MailAddress to = new MailAddress($"{toEmail}");
                 MailMessage m = new MailMessage(from, to);
-                m.Subject = "Уведомление от СКУД";
+                m.Subject = "СКУД Беатон Владивосток";
                 m.Body = "Вам создали аккаунт для администрирования СКУД\n" +
                     $"Ссылка на сайт: http://95.154.88.78:7151/\n" +
                     $"Ваш логин: {login}\n" +
-                    $"Ваш пароль: {password}";
+                    $"Ваш временный пароль: {password}\n" +
+                    $"Не забудьте сменить пароль в личном кабинете!";
                 SmtpClient smtp = new SmtpClient("smtp.mail.ru", 25);
                 smtp.Credentials = new NetworkCredential("sanya.kokorin.04@mail.ru", "S3nTM0DyVjE5rQNFcurQ");
                 smtp.EnableSsl = true;

@@ -29,6 +29,12 @@
 <CascadingAuthenticationState>
     <AuthorizeView Context="createContext">
         <PageTitle>Добавление сотрудника</PageTitle>
+        <nav class="navbar sticky-top">
+            <div class="container-fluid">
+                <h5 style="font-size: 130%; margin-top:5px;" class="fw-bold text-white">Создание сотрудника</h5>
+                <a class="btn btn-primary" href="/PersonalListPage">Назад</a>
+            </div>
+        </nav>
         <EditForm class="ali" Model="@Personal" OnSubmit="CreatePersonal">
             <h1 style="margin-bottom: 10%">Добавление сотрудника</h1>
             <h4>ФИО</h4>
