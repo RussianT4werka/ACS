@@ -15,6 +15,7 @@ namespace ACS_API.Controllers
     public class PersonalsController : ControllerBase
     {
         private readonly AcsContext _context;
+        private List<Personal> ListPersonal { get; set; } = new();
 
         public PersonalsController(AcsContext context)
         {
@@ -22,15 +23,31 @@ namespace ACS_API.Controllers
         }
 
         [HttpGet("GetPersonals")]
-        public async Task<ActionResult<List<Personal>>> GetPersonals()
+        public async Task<ActionResult<List<Personal>>> GetPersonals(int adminOn)
         {
             try
             {
-                if (_context.Personals == null)
+                if(adminOn == 0)
                 {
-                    return NotFound();
+                    if (_context.Personals == null)
+                    {
+                        return NotFound();
+                    }
+                    ListPersonal = await _context.Personals.ToListAsync();
+                    return ListPersonal;
                 }
-                return await _context.Personals.ToListAsync();
+                else if (adminOn == 1)
+                {
+                    var admins = await _context.Admins.ToListAsync();
+                    foreach(var newPers in admins)
+                    {
+                        string fio = $"{newPers.Surname} {newPers.Name} {newPers.Patronymic}";
+                        Personal newPersAdmin = new() { Fio = fio, Department = "Охрана", Position = "Администратор" };
+                        ListPersonal.Add(newPersAdmin);
+                    }
+                    return ListPersonal;
+                }
+                return Ok();
             }
             catch(Exception ex)
             {

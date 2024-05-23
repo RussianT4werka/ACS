@@ -58,6 +58,8 @@
             <div class="container-fluid">
                 <h5 style="font-size: 130%" class="fw-bold text-white">Персонал</h5>
                 <div>
+                    <input class="form-check-input" style="margin-top:9px" type="checkbox" id="flexCheckDefault" @onclick="@(() => TurnOnAdminList(adminListOn))" />
+                        <label class="form-check-label" for="flexCheckDefault" style="color:white">Показать администраторов</label>
                     <a class="btn btn-primary" href="/CreatePersonalPage">Добавить сотрудника</a>
                     <a class="btn btn-success" href="/RegistrationPage">Добавить администратора</a>
                 </div>
@@ -89,12 +91,20 @@
                             <td>@pers.Position</td>
                             <td>@pers.Image</td>
                             <td>@pers.W26</td>
-                            <td>
-                                <NavLink href="@($"/EditPersonalPage/{pers.Id}")" class="btn btn-primary">✏️</NavLink>
-                            </td>
-                            <td>
-                                <a class="btn btn-danger" @onclick="@(() => DeletePers(pers))">🗑️</a>
-                            </td>
+                            @if (pers.Department != "Охрана" && pers.Position != "Администратор")
+                            {
+                                <td>
+                                    <NavLink href="@($"/EditPersonalPage/{pers.Id}")" class="btn btn-primary">✏️</NavLink>
+                                </td>
+                                <td>
+                                    <a class="btn btn-danger" @onclick="@(() => DeletePers(pers))">🗑️</a>
+                                </td>
+                            }
+                            else{
+                                <td/>
+                                <td/>
+                            }
+                            
                         </tr>
                     }
                 }
@@ -113,11 +123,10 @@
 @code {
     private List<Personal> PersonalList = new();
     private volatile static bool workCycle = new();
+    private int adminListOn = 0;
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
-        GC.Collect();
-        PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
         Thread timer = new Thread(() => Timer());
         workCycle = true;
         timer.Start();
@@ -138,13 +147,23 @@
         var answer = await httpclient.PostAsJsonAsync("Personals/DelPers", pers);
     }
 
-    
+    async Task TurnOnAdminList(int adminOn)
+    {
+        if (adminOn == 0)
+        {
+            adminListOn = 1;
+        }
+        else if (adminOn == 1)
+        {
+            adminListOn = 0;
+        }
+    }
 
     private async Task Timer()
     {
         while (workCycle == true)
         {
-            PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>("Personals/GetPersonals");
+            PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>($"Personals/GetPersonals?adminOn={adminListOn}");
             Thread.Sleep(1000);
         }
     }
