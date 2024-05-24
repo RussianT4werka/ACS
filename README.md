@@ -41,6 +41,7 @@ https://docs.google.com/presentation/d/1xJlsz7X8E2QLdBNPdxzcL-3QLAbdHnaSHH_l6Hue
 17) Страница с выводом списка логов телеграм-БОТа
 ![image](https://github.com/RussianT4werka/ACS/assets/93105377/4a3c9753-bf5f-4692-ae1e-b06363a59c7b)
 18) Кстати при регистрации нового администратора, ему на эл. почту приходит уведомление с данными для входа и ссылкой на web-интерфейс
+
 ![image](https://github.com/RussianT4werka/ACS/assets/93105377/db82caad-295e-4006-bec4-1547daf083be)
 
 
