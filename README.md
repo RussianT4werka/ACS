@@ -1,4 +1,4 @@
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/a87664da-8591-4526-87a8-82112bbe2833)https://docs.google.com/presentation/d/1xJlsz7X8E2QLdBNPdxzcL-3QLAbdHnaSHH_l6HueEds/edit#slide=id.p
+https://docs.google.com/presentation/d/1xJlsz7X8E2QLdBNPdxzcL-3QLAbdHnaSHH_l6HueEds/edit#slide=id.p
 Данный проект является одновременно дипломным и рабочим.
 От директора завода Беатон поступило предложение о модернизации существующего СКУД от компании Sigur.
 Техническое задание:
