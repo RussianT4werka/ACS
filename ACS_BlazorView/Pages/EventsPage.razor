@@ -117,18 +117,19 @@
                                 s = "Точка 1";
                                 <td>@s</td>
                             }
-                            @* @if (events.PointId == 6)
+                            @if (events.PointId == 1)
                             {
                                 var s = Convert.ToString(events.PointId);
-                                s = "Точка 2";
+                                s = "старая точка";
                                 <td>@s</td>
-                            } *@
+                            }
                             @if (events.PointId == 8)
                             {
                                 var s = Convert.ToString(events.PointId);
                                 s = "Точка 2";
                                 <td>@s</td>
                             }
+
                             <td>@events.Time</td>
                         </tr>
                     }
