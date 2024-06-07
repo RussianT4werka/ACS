@@ -134,10 +134,7 @@
                         </tr>
                     }
                 }
-                catch
-                {
-                    
-                }
+                catch{}
             </tbody>
         </table>
     </AuthorizeView>
@@ -155,7 +152,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/EventsPage")
+            if (lcea.Location != "http://10.10.1.102:7151/EventsPage")
             {
                 workCycle = false;
             }
@@ -167,8 +164,12 @@
     {
         while (workCycle == true)
         {
-            Events = await httpclient.GetFromJsonAsync<List<Event>>($"Events/GetListEvents?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
-            Thread.Sleep(1000);
+            try
+            {
+                Events = await httpclient.GetFromJsonAsync<List<Event>>($"Events/GetListEvents?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
     }
     private async Task EventsAll()

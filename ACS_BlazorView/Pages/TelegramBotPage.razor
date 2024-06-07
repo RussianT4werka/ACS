@@ -74,32 +74,37 @@
             </thead>
 
             <tbody>
-                @foreach (Subscriber sub in @Subscribers)
+                @try
                 {
-                    <tr>
-                        <td>@Subscribers.IndexOf(sub)</td>
-                        <td>@sub.ChatId</td>
-                        <td>@sub.Name</td>
-                        <td>@sub.Surname</td>
-                        <td>@sub.Username</td>
-                        <td>
-                            <div class="form-check form-switch" style="margin-left:40%" @onclick="@(() => SubscribeOrNot(sub))">
-                                @if (sub.SubscribeOrNot == 0)
-                                {
-                                    <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault">
-                                    
-                                }
-                                else if (sub.SubscribeOrNot == 1)
-                                {
-                                    <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault" checked>
-                                }
-                            </div>
-                        </td>
-                        <td>
-                            <a class="btn btn-danger" @onclick="@(() => DeleteSub(sub))">🗑️</a>
-                        </td>
-                    </tr>
+                    @foreach (Subscriber sub in @Subscribers)
+                    {
+                        <tr>
+                            <td>@Subscribers.IndexOf(sub)</td>
+                            <td>@sub.ChatId</td>
+                            <td>@sub.Name</td>
+                            <td>@sub.Surname</td>
+                            <td>@sub.Username</td>
+                            <td>
+                                <div class="form-check form-switch" style="margin-left:40%" @onclick="@(() => SubscribeOrNot(sub))">
+                                    @if (sub.SubscribeOrNot == 0)
+                                    {
+                                        <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault">
+
+                                    }
+                                    else if (sub.SubscribeOrNot == 1)
+                                    {
+                                        <input class="form-check-input btn-lg btn-block" type="checkbox" id="flexSwitchCheckDefault" checked>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger" @onclick="@(() => DeleteSub(sub))">🗑️</a>
+                            </td>
+                        </tr>
+                    }
                 }
+                catch{}
+                
             </tbody>    
         </table>
 </AuthorizeView>
@@ -121,7 +126,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/TelegramBotPage")
+            if (lcea.Location != "http://10.10.1.102:7151/TelegramBotPage")
             {
                 workCycle = false;
             }
@@ -133,19 +138,31 @@
     {
         while (workCycle == true)
         {
-            Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
-            Thread.Sleep(1000);
+            try
+            {
+                Subscribers = await httpclient.GetFromJsonAsync<List<Subscriber>>("SubscriberTelegramBots/GetListSubscribers");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
     }
 
     async Task SubscribeOrNot(Subscriber sub)
     {
-        var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/SubscribeOrNot", sub);
+        try
+        {
+            var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/SubscribeOrNot", sub);
+        }
+        catch{}
     }
 
     async Task DeleteSub(Subscriber sub)
     {
-        var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/DelSubscriber", sub);
+        try
+        {
+            var answer = await httpclient.PostAsJsonAsync("SubscriberTelegramBots/DelSubscriber", sub);
+        }
+        catch{}
     }
 
     public class Subscriber

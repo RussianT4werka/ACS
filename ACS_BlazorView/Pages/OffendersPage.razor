@@ -121,7 +121,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/OffendersPage")
+            if (lcea.Location != "http://10.10.1.102:7151/OffendersPage")
             {
                 workCycle = false;
             }
@@ -133,8 +133,12 @@
     {
         while (workCycle == true)
         {
-            Offenders = await httpclient.GetFromJsonAsync<List<Offender>>($"Offenders/GetOffendersForPage?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
-            Thread.Sleep(1000);
+            try
+            {
+                Offenders = await httpclient.GetFromJsonAsync<List<Offender>>($"Offenders/GetOffendersForPage?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
     }
 

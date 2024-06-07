@@ -150,15 +150,19 @@
     {
         if (!string.IsNullOrEmpty(userData.Email) || !string.IsNullOrEmpty(userData.Login) || !string.IsNullOrEmpty(userData.Password))
         {
-            var answer = await httpclient.PostAsJsonAsync("Admins/EditAdmin", userData);
-            if (answer.IsSuccessStatusCode)
+            try
             {
-                message = "Данные успешно сохранены";
+                var answer = await httpclient.PostAsJsonAsync("Admins/EditAdmin", userData);
+                if (answer.IsSuccessStatusCode)
+                {
+                    message = "Данные успешно сохранены";
+                }
+                else
+                {
+                    message = await answer.Content.ReadAsStringAsync();
+                }
             }
-            else
-            {
-                message = await answer.Content.ReadAsStringAsync();
-            }
+            catch{}
         }
         else
         {

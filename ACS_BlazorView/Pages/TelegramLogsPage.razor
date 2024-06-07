@@ -84,10 +84,7 @@
                         </tr>
                     }
                 }
-                catch
-                {
-                    
-                }
+                catch{}
             </tbody>
         </table>
     </AuthorizeView>
@@ -111,8 +108,12 @@
     {
         while (workCycle == true)
         {
-            Logs = await httpclient.GetFromJsonAsync<List<Log>>($"Logs/GetListLogs?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
-            Thread.Sleep(1000);
+            try
+            {
+                Logs = await httpclient.GetFromJsonAsync<List<Log>>($"Logs/GetListLogs?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
     }
 
@@ -123,6 +124,10 @@
 
     async Task DeleteLogs()
     {
-        var answer = await httpclient.PostAsJsonAsync("Logs/DeleteListLogs", Logs);
+        try
+        {
+            var answer = await httpclient.PostAsJsonAsync("Logs/DeleteListLogs", Logs);
+        }
+        catch{}
     }
 }

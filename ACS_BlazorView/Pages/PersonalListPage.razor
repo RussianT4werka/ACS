@@ -86,7 +86,14 @@
                     {
                         <tr>
                             <td>@PersonalList.IndexOf(pers)</td>
-                            <td>@pers.Fio</td>
+                            @if (!string.IsNullOrEmpty(pers.Fio) && pers.Fio != "  ")
+                            {
+                                <td>@pers.Fio</td>
+                            }
+                            else
+                            {
+                                <td>*без имени*</td>
+                            }
                             <td>@pers.Department</td>
                             <td>@pers.Position</td>
                             <td>@pers.Image</td>
@@ -108,10 +115,7 @@
                         </tr>
                     }
                 }
-                catch
-                {
-                    
-                }
+                catch{}
                 
             </tbody>
         </table>
@@ -133,7 +137,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/PersonalListPage")
+            if (lcea.Location != "http://10.10.1.102:7151/PersonalListPage")
             {
                 workCycle = false;
             }
@@ -144,7 +148,11 @@
 
     async Task DeletePers(Personal pers)
     {
-        var answer = await httpclient.PostAsJsonAsync("Personals/DelPers", pers);
+        try
+        {
+            var answer = await httpclient.PostAsJsonAsync("Personals/DelPers", pers);
+        }
+        catch{}
     }
 
     async Task TurnOnAdminList(int adminOn)
@@ -163,8 +171,12 @@
     {
         while (workCycle == true)
         {
-            PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>($"Personals/GetPersonals?adminOn={adminListOn}");
-            Thread.Sleep(1000);
+            try
+            {
+                PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>($"Personals/GetPersonals?adminOn={adminListOn}");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
     }
 }

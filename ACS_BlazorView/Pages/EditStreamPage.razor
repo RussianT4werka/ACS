@@ -79,16 +79,20 @@
     {
         if (!string.IsNullOrEmpty(Stream.Name) && !string.IsNullOrEmpty(Stream.Link))
         {
-            var answer = await httpclient.PostAsJsonAsync("VideoStreams/EditStream", Stream);
-            if (answer.IsSuccessStatusCode)
+            try
             {
-                message = "Поток успешно изменён";
-                nav.NavigateTo("/StreamListPage");
+                var answer = await httpclient.PostAsJsonAsync("VideoStreams/EditStream", Stream);
+                if (answer.IsSuccessStatusCode)
+                {
+                    message = "Поток успешно изменён";
+                    nav.NavigateTo("/StreamListPage");
+                }
+                else
+                {
+                    message = "Случилась непредвиденная ошибка";
+                }
             }
-            else
-            {
-                message = "Случилась непредвиденная ошибка";
-            }
+            catch{}
         }
         else
         {

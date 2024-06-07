@@ -134,19 +134,19 @@
     string message = "";
     async Task Reg()
     {
-        var answer = await httpclient.PostAsJsonAsync("Admins/Registration", userData);
-        if (answer.StatusCode == System.Net.HttpStatusCode.OK)
+        try
         {
-            /*int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
-            string session = await sessions.GenerateSessionAsync(idUser);
-            ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/TelegramBotPage");*/
-            userData = new();
-            message = "Новый администратор успешно добавлен";
+            var answer = await httpclient.PostAsJsonAsync("Admins/Registration", userData);
+            if (answer.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                userData = new();
+                message = "Новый администратор успешно добавлен";
+            }
+            else
+            {
+                message = await answer.Content.ReadAsStringAsync();
+            }
         }
-        else
-        {
-            message = await answer.Content.ReadAsStringAsync();
-        }
+        catch{}
     }
 }

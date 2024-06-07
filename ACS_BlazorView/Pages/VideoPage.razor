@@ -213,54 +213,56 @@
     }
 
     async Task AddStream(VideoStream stream)
-    { 
-        if (!string.IsNullOrEmpty(stream.Name) && !string.IsNullOrEmpty(stream.Link))
+    {
+        try
         {
-            VideoStream = new() { Name = stream.Name, Link = stream.Link, LinkOpenDoor = stream.LinkOpenDoor };
-            var answer = await httpClient.PostAsJsonAsync("VideoStreams/AddStream", VideoStream);
-            if (answer.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(stream.Name) && !string.IsNullOrEmpty(stream.Link))
             {
-                try
+                VideoStream = new() { Name = stream.Name, Link = stream.Link, LinkOpenDoor = stream.LinkOpenDoor };
+                var answer = await httpClient.PostAsJsonAsync("VideoStreams/AddStream", VideoStream);
+                if (answer.IsSuccessStatusCode)
                 {
-                    VideoStream = new();
-                    VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+                    try
+                    {
+                        VideoStream = new();
+                        VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
 
-                    if (VideoStreamList.Count <= 4)
-                    {
-                        countColumn = 4;
-                        countRow = 1;
+                        if (VideoStreamList.Count <= 4)
+                        {
+                            countColumn = 4;
+                            countRow = 1;
+                        }
+                        if (VideoStreamList.Count > 4 && VideoStreamList.Count <= 8)
+                        {
+                            countColumn = 4;
+                            countRow = 2;
+                        }
+                        if (VideoStreamList.Count > 8 && VideoStreamList.Count <= 12)
+                        {
+                            countColumn = 4;
+                            countRow = 3;
+                        }
+                        if (VideoStreamList.Count > 12 && VideoStreamList.Count <= 16)
+                        {
+                            countColumn = 4;
+                            countRow = 4;
+                        }
                     }
-                    if (VideoStreamList.Count > 4 && VideoStreamList.Count <= 8)
+                    catch (Exception ex)
                     {
-                        countColumn = 4;
-                        countRow = 2;
+                        message = ex.ToString();
                     }
-                    if (VideoStreamList.Count > 8 && VideoStreamList.Count <= 12)
-                    {
-                        countColumn = 4;
-                        countRow = 3;
-                    }
-                    if (VideoStreamList.Count > 12 && VideoStreamList.Count <= 16)
-                    {
-                        countColumn = 4;
-                        countRow = 4;
-                    }
-                     //nav.NavigateTo($"{nav.Uri}", true);
                 }
-                catch (Exception ex)
+                else
                 {
-                    message = ex.ToString();
+                    message = "Что-то пошло не так";
                 }
             }
             else
             {
-                message = "Что-то пошло не так";
+                message = "Заполните поле";
             }
         }
-        else
-        {
-            message = "Заполните поле";
-        }
-        
+        catch{}
     }
 }

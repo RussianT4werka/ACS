@@ -105,10 +105,7 @@
                         </tr>
                     }
                 }
-                catch
-                {
-
-                }
+                catch{}
             </tbody>
         </table>
     </AuthorizeView>
@@ -127,7 +124,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/CyclesPage")
+            if (lcea.Location != "http://10.10.1.102:7151/CyclesPage")
             {
                 workCycle = false;
             }
@@ -140,8 +137,12 @@
     {
         while (workCycle == true)
         { //{01.01.0001 0:00:00} = {18.05.2024 22:11:52}
-            Cycles = await httpclient.GetFromJsonAsync<List<ACS_API.DTO.Cycle>>($"Cycles/GetCycles?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss.fff")}");
-            Thread.Sleep(1000);
+            try
+            {
+                Cycles = await httpclient.GetFromJsonAsync<List<ACS_API.DTO.Cycle>>($"Cycles/GetCycles?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss.fff")}");
+                Thread.Sleep(1000);
+            }
+            catch{}
         }
 
     }

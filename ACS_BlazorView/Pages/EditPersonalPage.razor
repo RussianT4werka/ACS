@@ -82,16 +82,20 @@
     {
         if (!string.IsNullOrEmpty(Personal.Fio))
         {
-            var answer = await httpclient.PostAsJsonAsync("Personals/EditPersonal", Personal);
-            if (answer.IsSuccessStatusCode)
+            try
             {
-                message = "Работник успешно изменён";
-                nav.NavigateTo("/PersonalListPage");
+                var answer = await httpclient.PostAsJsonAsync("Personals/EditPersonal", Personal);
+                if (answer.IsSuccessStatusCode)
+                {
+                    message = "Работник успешно изменён";
+                    nav.NavigateTo("/PersonalListPage");
+                }
+                else
+                {
+                    message = "Случилась непредвиденная ошибка";
+                }
             }
-            else
-            {
-                message = "Случилась непредвиденная ошибка";
-            }
+            catch{}
         }
         else
         {

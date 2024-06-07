@@ -106,7 +106,7 @@
 
         nav.LocationChanged += (obj, lcea) =>
         {
-            if (lcea.Location != "https://10.10.1.7:7151/StreamListPage")
+            if (lcea.Location != "http://10.10.1.102:7151/StreamListPage")
             {
                 workCycle = false;
             }
@@ -117,15 +117,23 @@
 
     private async Task Timer()
     {
-        while (workCycle == true)
+        try
         {
-            VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
-            Thread.Sleep(1000);
+            while (workCycle == true)
+            {
+                VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+                Thread.Sleep(1000);
+            }
         }
+        catch{}
     }
 
     async Task DeleteStream(VideoStream stream)
     {
-        var answer = await httpClient.PostAsJsonAsync("VideoStreams/DelStream", stream);
+        try
+        {
+            var answer = await httpClient.PostAsJsonAsync("VideoStreams/DelStream", stream);
+        }
+        catch { }
     }
 }

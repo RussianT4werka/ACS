@@ -69,38 +69,30 @@
 @code {
     Personal Personal = new();
     string message = "";
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-
-        }
-        catch
-        {
-            message = "Упс... Что-то пошло не так";
-        }
-
-        await base.OnInitializedAsync();
-    }
 
     async Task CreatePersonal()
     {
         if (!string.IsNullOrEmpty(Personal.Fio))
         {
-            var answer = await httpclient.PostAsJsonAsync("Personals/CreatePersonal", Personal);
+            try
+            {
+                var answer = await httpclient.PostAsJsonAsync("Personals/CreatePersonal", Personal);
 
-            if (answer.IsSuccessStatusCode)
-            {
-                message = "Работник успешно сохранён";
-                Personal.Fio = null;
-                Personal.Department = null;
-                Personal.Position = null;
-                Personal.W26 = null;
+                if (answer.IsSuccessStatusCode)
+                {
+                    message = "Работник успешно сохранён";
+                    Personal.Fio = null;
+                    Personal.Department = null;
+                    Personal.Position = null;
+                    Personal.W26 = null;
+                }
+                else
+                {
+                    message = "Случилась непредвиденная ошибка";
+                }
             }
-            else
-            {
-                message = "Случилась непредвиденная ошибка";
-            }
+            catch{}
+        
         }
         else
         {

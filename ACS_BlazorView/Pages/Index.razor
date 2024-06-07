@@ -91,19 +91,23 @@
     string message = "";
     async Task Auth()
     {
-        var answer = await httpclient.PostAsJsonAsync(
+        try
+        {
+            var answer = await httpclient.PostAsJsonAsync(
             "Admins/Authorization", userData);
-        if (answer.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
-            string session = await sessions.GenerateSessionAsync(idUser);
-            ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            nav.NavigateTo("/EventsPage");
+            if (answer.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
+                string session = await sessions.GenerateSessionAsync(idUser);
+                ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
+                nav.NavigateTo("/EventsPage");
+            }
+            else
+            {
+                message = await answer.Content.ReadAsStringAsync();
+            }
         }
-        else
-        {
-            message = await answer.Content.ReadAsStringAsync();
-        }
+        catch { }
     }
 
     public class UserData
