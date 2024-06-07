@@ -29,7 +29,7 @@ namespace ACS_API.Tools
             catch(Exception ex)
             {
                 var log = new Log() { Title = $"Ошибка отправки email: {ex.Message}", DateTime = DateTime.Now };
-                httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+                httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
             }
         }
     }

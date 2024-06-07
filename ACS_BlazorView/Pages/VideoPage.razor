@@ -14,9 +14,9 @@
     }
     .cam{
         text-align:left;
-        transform: scale(0.2) !important;
+        transform: scale(0.195) !important;
         transform-origin: 0px 0px;
-        height:1100px;
+        height:1125px;
         width:2065px;
     }
     /*общие настройки сетки*/
@@ -27,8 +27,9 @@
         /*подключаем сетку*/
         display: grid;
         /*формируем по 4 одинаковых строки и столбца*/
-        grid-template-columns: repeat(@countColumn, 415px);
+        grid-template-columns: repeat(@countColumn, 404px);
         grid-template-rows: repeat(@countRow, 262px);
+        display: grid;
     }
 
         /*внешний вид ячеек*/
@@ -221,7 +222,30 @@
             {
                 try
                 {
-                     nav.NavigateTo($"{nav.Uri}", true);
+                    VideoStream = new();
+                    VideoStreamList = await httpClient.GetFromJsonAsync<List<VideoStream>>("VideoStreams/GetVideoStreams");
+
+                    if (VideoStreamList.Count <= 4)
+                    {
+                        countColumn = 4;
+                        countRow = 1;
+                    }
+                    if (VideoStreamList.Count > 4 && VideoStreamList.Count <= 8)
+                    {
+                        countColumn = 4;
+                        countRow = 2;
+                    }
+                    if (VideoStreamList.Count > 8 && VideoStreamList.Count <= 12)
+                    {
+                        countColumn = 4;
+                        countRow = 3;
+                    }
+                    if (VideoStreamList.Count > 12 && VideoStreamList.Count <= 16)
+                    {
+                        countColumn = 4;
+                        countRow = 4;
+                    }
+                     //nav.NavigateTo($"{nav.Uri}", true);
                 }
                 catch (Exception ex)
                 {

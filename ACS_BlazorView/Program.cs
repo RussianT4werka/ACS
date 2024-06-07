@@ -15,7 +15,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped(s => new HttpClient
 {
-    BaseAddress = new Uri("http://10.10.1.7:7123/api/")
+    BaseAddress = new Uri("http://10.10.1.102:7123/api/")
 });
 
 var app = builder.Build();

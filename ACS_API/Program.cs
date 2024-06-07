@@ -77,8 +77,8 @@ namespace ACS_API
         {
             while (true)
             {
-                var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/CreateOffender","");
-                var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Cycles/CreateCycle", "");
+                var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/CreateOffender","");
+                var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Cycles/CreateCycle", "");
                 UpdateM(BotClient, Update, Token);
                 Thread.Sleep(1000);
             }
@@ -127,7 +127,7 @@ namespace ACS_API
                 if (update != null)
                 {
                     var message = update.Message;
-                    var findChatID = await httpClient.GetFromJsonAsync<int>($"http://10.10.1.7:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
+                    var findChatID = await httpClient.GetFromJsonAsync<int>($"http://10.10.1.102:7123/api/SubscriberTelegramBots/GetSubscriberCheckNull?id={message?.Chat.Id}");
                     if (!message.Text.IsNullOrEmpty() && message.Text.Contains("Хочу получать уведомления") && findChatID == 0 || findChatID == 0)
                     {
                         string stringChatId = Convert.ToString(message.Chat.Id);
@@ -138,7 +138,7 @@ namespace ACS_API
                             Name = message.Chat.FirstName,
                             Surname = message.Chat.LastName
                         };
-                        await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
+                        await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/SubscriberTelegramBots/AddSubscriber", SubscriberTelegramBot);
                         await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"{update.Message.Chat.Username}, подписал вас на уведомления. Нужно только согласовать с администратором");
                     }
                     else
@@ -148,7 +148,7 @@ namespace ACS_API
                 }
 
 
-                List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("http://10.10.1.7:7123/api/Offenders/GetOffenders");
+                List<Offender>? ListOffenders = await httpClient.GetFromJsonAsync<List<Offender>>("http://10.10.1.102:7123/api/Offenders/GetOffenders");
                 foreach (var offender in ListOffenders)
                 {
                     if (offender.SendOrNot == 0)
@@ -159,7 +159,7 @@ namespace ACS_API
                 if (ListOffendersNotSend != null && ListOffendersNotSend.Count > 0)
                 {
                     
-                    List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>("http://10.10.1.7:7123/api/SubscriberTelegramBots/GetListSubscribers");
+                    List<SubscriberTelegramBot>? Subscribers = await httpClient.GetFromJsonAsync<List<SubscriberTelegramBot>>("http://10.10.1.102:7123/api/SubscriberTelegramBots/GetListSubscribers");
 
                     foreach (var sub in Subscribers)
                     {
@@ -173,7 +173,7 @@ namespace ACS_API
                     {
                         if(ListSub == null || ListSub.Count() == 0)
                         {
-                            await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/SendOrNot", offender); 
+                            await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender); 
                         }
                         else
                         {
@@ -183,13 +183,13 @@ namespace ACS_API
                                 chatId: sub.ChatId,
                                 text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
                                 log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now };
-                                await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
-                                await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Offenders/SendOrNot", offender); 
+                                await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
+                                await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender); 
                                 Console.WriteLine(log.Title);
                             }
                             log = new Log() { Title = $"Уведомление отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
                             ListSub.Clear();
-                            await httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+                            await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
                             Console.WriteLine(log.Title);
 
                         }
@@ -200,7 +200,7 @@ namespace ACS_API
             {
                 var exeption = $"Ошибка : {ex}";
                 log = new Log() { Title = exeption, DateTime = DateTime.Now };
-                httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+                httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
                 Console.WriteLine(exeption);
                 Console.ReadLine();
             }
@@ -215,7 +215,7 @@ namespace ACS_API
                 _ => exception.ToString()
             };
             log = new Log() { Title = ErrorMessage, DateTime = DateTime.Now };
-            httpClient.PostAsJsonAsync("http://10.10.1.7:7123/api/Logs/WriteLog", log);
+            httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
