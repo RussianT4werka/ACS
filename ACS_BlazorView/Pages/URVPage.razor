@@ -58,8 +58,11 @@
             <div class="container-fluid">
                 <h5 style="font-size: 130%; margin-top:5px" class="fw-bold text-white">Учёт рабочего времени</h5>
                 <div>
-                    <label style="color:white; font-weight: bold">Дата: </label>
-                    <input type="date" id="start" name="trip-start" @bind="Date" />
+                    <label style="color:white; font-weight: bold">С : </label>
+                    <input type="date" id="start" name="trip-start" @bind="DateStart" />
+                    <label style="color:white; font-weight: bold">По : </label>
+                    <input type="date" id="start" name="trip-start" @bind="DateEnd" />
+                    <a class="btn btn-success" @onclick="@(() => PostReport())">Экспорт в Excel</a>
                 </div>
 
             </div>
@@ -102,7 +105,8 @@
 @code {
     private List<Personal> PersonalList = new();
 
-    private DateTime Date = DateTime.Now;
+    private DateTime DateStart = DateTime.Now;
+    private DateTime DateEnd = DateTime.Now;
 
     private int adminListOn = 0;
     private List<URV> ListURV = new();
@@ -126,9 +130,9 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task GetReport(Event events)
+    private async Task PostReport()
     {
-        
+        var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", "CreateReportExcel");
     }
 
     private async Task Timer()
@@ -137,8 +141,7 @@
         {
             try
             {
-                //PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>($"Personals/GetPersonals?adminOn={adminListOn}");
-                ListURV = await httpclient.GetFromJsonAsync<List<URV>>($"URV/GetListURV?Date={Date.ToString("yyyy-MM-dd HH:mm:ss")}");
+                ListURV = await httpclient.GetFromJsonAsync<List<URV>>($"URV/GetListURV?dateStart={DateStart.ToString("yyyy-MM-dd HH:mm:ss")}&dateEnd={DateEnd.ToString("yyyy-MM-dd HH:mm:ss")}");
                 Thread.Sleep(1000);
             }
             catch { }
