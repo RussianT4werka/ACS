@@ -51,15 +51,15 @@
             background: #F7F7F7;
         }
 </style>
-<PageTitle>УРВ</PageTitle>
+<PageTitle>Учёт рабочего времени</PageTitle>
 <CascadingAuthenticationState>
     <AuthorizeView>
         <nav class="navbar sticky-top">
             <div class="container-fluid">
-                <h5 style="font-size: 130%" class="fw-bold text-white">Учёт рабочего времени</h5>
+                <h5 style="font-size: 130%; margin-top:5px" class="fw-bold text-white">Учёт рабочего времени</h5>
                 <div>
-                    <input type="date" id="start" name="trip-start" @bind="DateFiltr" />
-                    <a class="btn btn-primary" @onclick="@(() => OffendersAll())">Показать все</a>
+                    <label style="color:white; font-weight: bold">Дата: </label>
+                    <input type="date" id="start" name="trip-start" @bind="Date" />
                 </div>
 
             </div>
@@ -68,38 +68,31 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Имя</th>
+                    <th>Дата</th>
+                    <th>ФИО</th>
                     <th>Должность</th>
-                    <th>Время на работе</th>
+                    <th>Начало</th>
+                    <th>Конец</th>
+                    <th>Наработка</th>
+
                 </tr>
             </thead>
 
             <tbody>
                 @try
                 {
-                    @* @foreach (Offender offender in @Offenders)
+                    @foreach (URV urv in ListURV)
                     {
                         <tr>
-                            <td>@Offenders.IndexOf(offender)</td>
-                            <td>@offender.Name</td>
-                            <td>@offender.Position</td>
-                            <td>@offender.W26</td>
-                            <td>@offender.Time</td>
-                            @if (offender.SendOrNot == 0)
-                            {
-                                var s = Convert.ToString(offender.SendOrNot);
-                                s = "Не отправлено";
-                                <td>@s</td>
-                            }
-                            else
-                            {
-                                var s = Convert.ToString(offender.SendOrNot);
-                                s = "Отправлено";
-                                <td>@s</td>
-                            }
-
+                            <td>@ListURV.IndexOf(urv)</td>
+                            <td>@urv.Date.ToString("dd-MM-yyyy")</td>
+                            <td>@urv.FIO</td>
+                            <td>@urv.Position</td>
+                            <td>@urv.StartTime</td>
+                            <td>@urv.EndTime</td>
+                            <td>@urv.TotalTime</td>
                         </tr>
-                    } *@
+                    }
                 }
                 catch { }
             </tbody>
@@ -107,9 +100,14 @@
     </AuthorizeView>
 </CascadingAuthenticationState>
 @code {
-    private List<Offender> Offenders = new();
+    private List<Personal> PersonalList = new();
+
+    private DateTime Date = DateTime.Now;
+
+    private int adminListOn = 0;
+    private List<URV> ListURV = new();
+
     private volatile static bool workCycle = new();
-    private DateTime DateFiltr = DateTime.Now;
 
     protected override async Task OnAfterRenderAsync(bool firstrender)
     {
@@ -127,21 +125,23 @@
 
         await base.OnInitializedAsync();
     }
+
+    private async Task GetReport(Event events)
+    {
+        
+    }
+
     private async Task Timer()
     {
         while (workCycle == true)
         {
             try
             {
-                //Offenders = await httpclient.GetFromJsonAsync<List<Offender>>($"Offenders/GetOffendersForPage?DateFiltr={DateFiltr.ToString("yyyy-MM-dd HH:mm:ss")}");
+                //PersonalList = await httpclient.GetFromJsonAsync<List<Personal>>($"Personals/GetPersonals?adminOn={adminListOn}");
+                ListURV = await httpclient.GetFromJsonAsync<List<URV>>($"URV/GetListURV?Date={Date.ToString("yyyy-MM-dd HH:mm:ss")}");
                 Thread.Sleep(1000);
             }
             catch { }
         }
-    }
-
-    private async Task OffendersAll()
-    {
-        DateFiltr = new();
     }
 }
