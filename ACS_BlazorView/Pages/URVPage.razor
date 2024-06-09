@@ -4,6 +4,7 @@
 @inject SessionManager manager;
 @using LibraryBD.BD;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using System.Web
 @inject ProtectedSessionStorage storage
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
@@ -62,7 +63,7 @@
                     <input type="date" id="start" name="trip-start" @bind="DateStart" />
                     <label style="color:white; font-weight: bold">По : </label>
                     <input type="date" id="start" name="trip-start" @bind="DateEnd" />
-                    <a class="btn btn-success" @onclick="@(() => PostReport())">Экспорт в Excel</a>
+                    <a class="btn btn-success" href="Учёты рабочего времени/Учёт рабочего времени.xlsx" download @onclick="@(() => PostReport(Time))">Экспорт в Excel</a>
                 </div>
 
             </div>
@@ -107,6 +108,7 @@
 
     private DateTime DateStart = DateTime.Now;
     private DateTime DateEnd = DateTime.Now;
+    private DateTime Time = DateTime.Now;
 
     private int adminListOn = 0;
     private List<URV> ListURV = new();
@@ -130,9 +132,24 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task PostReport()
+    private async Task PostReport(DateTime time)
     {
-        var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", "CreateReportExcel");
+        var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", ListURV);
+
+
+        // if (createReportExcel.IsSuccessStatusCode)
+        // {
+        //     string url = "Учёты рабочего времени/Учёт рабочего времени.xlsx";
+        //     string targetUrl = "http://10.10.1.102:7151";
+
+        //     string encodedUrl = HttpUtility.UrlEncode(url);
+
+        //     // Append the encoded URL as a query string parameter to the target URL
+        //     targetUrl += "/" + encodedUrl;
+
+            
+        // }
+        
     }
 
     private async Task Timer()
