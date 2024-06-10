@@ -90,15 +90,15 @@
                             <td>@cycles.W26</td>
                             <td>@cycles.TimeP1</td>
                             <td>@cycles.TimeP2</td>
-                            @if(@cycles.Delta <= new TimeSpan(0, 5, 0))
+                            @if(@cycles.Delta <= new TimeSpan(0, 15, 0))
                             {
                                 <td>@cycles.Delta 🟢</td>
                             }
-                            else if (@cycles.Delta > new TimeSpan(0, 5, 0) && @cycles.Delta < new TimeSpan(0, 7, 0))
+                            else if (@cycles.Delta > new TimeSpan(0, 15, 0) && @cycles.Delta < new TimeSpan(0, 17, 0))
                             {
                                 <td>@cycles.Delta 🟡</td>
                             }
-                            else if (@cycles.Delta >= new TimeSpan(0, 7, 0))
+                            else if (@cycles.Delta >= new TimeSpan(0, 17, 0))
                             {
                                 <td>@cycles.Delta 🔴</td>
                             }
