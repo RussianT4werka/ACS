@@ -16,5 +16,7 @@ namespace LibraryBD.BD
         public TimeSpan EndTime { get; set; }
         public TimeSpan TotalTime { get; set; }
 
+        public DateTime StartTime2 { get; set; }
+        public DateTime EndTime2 { get; set; }
     }
 }

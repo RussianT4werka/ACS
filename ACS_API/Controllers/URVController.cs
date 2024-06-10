@@ -60,7 +60,7 @@ namespace ACS_API.Controllers
 
                                 TimeSpan totalTime = end - start;
 
-                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime };
+                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
                                 ListURV.Add(urv);
                             }
                         }
@@ -84,7 +84,7 @@ namespace ACS_API.Controllers
 
                                     TimeSpan totalTime = end - start;
 
-                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime };
+                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
                                     ListURV.Add(urv);
                                 }
                             }
@@ -101,10 +101,12 @@ namespace ACS_API.Controllers
         }
 
         [HttpPost("CreateReportExcel")]
-        public async Task<ActionResult> CreateReportExcel([FromBody]List<URV> listURV)
+        public async Task<ActionResult> CreateReportExcel(List<URV> listURV)
         {
             try
             {
+                var randomUrvForPeriod = listURV.FirstOrDefault();
+
                 DateTime Time = DateTime.Now;
                 //Create a Workbook object
                 Workbook wb = new Workbook();
@@ -119,7 +121,7 @@ namespace ACS_API.Controllers
                 sheet.Range["A1:F1"].Merge();
 
                 //Write data to A1 and apply formatting to it
-                sheet.Range["A1"].Value = $"Табель трудовой дисциплины на момент {Time}";
+                sheet.Range["A1"].Value = $"Табель трудовой дисциплины на момент {Time}\nС: {randomUrvForPeriod.StartTime2.ToString("dd.MM.yyyy")} По: {randomUrvForPeriod.EndTime2.ToString("dd.MM.yyyy")}";
                 sheet.Range["A1"].HorizontalAlignment = HorizontalAlignType.Center;
                 sheet.Range["A1"].VerticalAlignment = VerticalAlignType.Center;
                 sheet.Range["A1"].Style.Font.IsBold = true;
@@ -136,7 +138,7 @@ namespace ACS_API.Controllers
 
                 dt.Columns.Add("Должность");
 
-                dt.Columns.Add("Начала\tфактических\tприсутствий");
+                dt.Columns.Add("Начала\nфактических\nприсутствий");
 
                 dt.Columns.Add("Окончания\nфактических\nприсутствий");
 
@@ -156,15 +158,45 @@ namespace ACS_API.Controllers
 
                 //Set column width
                 sheet.Range["A2:F7"].Columns[2].ColumnWidth = 50F;
+
                 sheet.Range["A2"].ColumnWidth = 20F;
+                sheet.Range["A2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["A2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["A2"].Style.Font.IsBold = true;
+                sheet.Range["A2"].Style.Font.Size = 10F;
+
                 sheet.Range["B2"].ColumnWidth = 35F;
+                sheet.Range["B2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["B2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["B2"].Style.Font.IsBold = true;
+                sheet.Range["B2"].Style.Font.Size = 10F;
+
                 sheet.Range["C2"].ColumnWidth = 20F;
+                sheet.Range["C2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["C2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["C2"].Style.Font.IsBold = true;
+                sheet.Range["C2"].Style.Font.Size = 10F;
 
                 sheet.Range["D2"].ColumnWidth = 20F;
+                sheet.Range["D2"].RowHeight = 40F;
+                sheet.Range["D2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["D2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["D2"].Style.Font.IsBold = true;
+                sheet.Range["D2"].Style.Font.Size = 10F;
 
                 sheet.Range["E2"].ColumnWidth = 20F;
+                sheet.Range["E2"].RowHeight = 40F;
+                sheet.Range["E2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["E2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["E2"].Style.Font.IsBold = true;
+                sheet.Range["E2"].Style.Font.Size = 10F;
 
                 sheet.Range["F2"].ColumnWidth = 20F;
+                sheet.Range["F2"].RowHeight = 40F;
+                sheet.Range["F2"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["F2"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["F2"].Style.Font.IsBold = true;
+                sheet.Range["F2"].Style.Font.Size = 10F;
 
                 //Set border style of a range
                 sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderAround(LineStyleType.Medium); // жирная рамка вокруг

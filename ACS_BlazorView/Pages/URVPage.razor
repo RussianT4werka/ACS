@@ -64,7 +64,7 @@
                     <input type="date" id="start" name="trip-start" @bind="DateStart" />
                     <label style="color:white; font-weight: bold">По : </label>
                     <input type="date" id="start" name="trip-start" @bind="DateEnd" />
-                    <a class="btn btn-success" @onclick="@(() => PostReport(Time))">Экспорт в Excel</a>
+                    <a class="btn btn-success" @onclick="@(() => PostReport())">Экспорт в Excel</a>
                 </div>
 
             </div>
@@ -133,12 +133,11 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task PostReport(DateTime time)
+    private async Task PostReport()
     {
         try
         {
             var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", ListURV);
-
 
             if (createReportExcel.IsSuccessStatusCode)
             {
