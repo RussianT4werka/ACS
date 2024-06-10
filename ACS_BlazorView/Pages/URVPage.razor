@@ -10,6 +10,7 @@
 @inject SessionManager sessions;
 @inject AuthenticationStateProvider auth;
 @inject NavigationManager nav;
+@inject IJSRuntime JSRuntime
 <style>
     .container-fluid {
         background-color: #ff7300;
@@ -63,7 +64,7 @@
                     <input type="date" id="start" name="trip-start" @bind="DateStart" />
                     <label style="color:white; font-weight: bold">По : </label>
                     <input type="date" id="start" name="trip-start" @bind="DateEnd" />
-                    <a class="btn btn-success" href="Учёты рабочего времени/Учёт рабочего времени.xlsx" download @onclick="@(() => PostReport(Time))">Экспорт в Excel</a>
+                    <a class="btn btn-success" @onclick="@(() => PostReport(Time))">Экспорт в Excel</a>
                 </div>
 
             </div>
@@ -134,21 +135,22 @@
 
     private async Task PostReport(DateTime time)
     {
-        var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", ListURV);
+        try
+        {
+            var createReportExcel = await httpclient.PostAsJsonAsync("URV/CreateReportExcel", ListURV);
 
 
-        // if (createReportExcel.IsSuccessStatusCode)
-        // {
-        //     string url = "Учёты рабочего времени/Учёт рабочего времени.xlsx";
-        //     string targetUrl = "http://10.10.1.102:7151";
+            if (createReportExcel.IsSuccessStatusCode)
+            {
+                string url = "http://10.10.1.102:7151/Учёты рабочего времени/Учёт рабочего времени.xlsx";
 
-        //     string encodedUrl = HttpUtility.UrlEncode(url);
+                await JSRuntime.InvokeVoidAsync("open", url, "_blank");
 
-        //     // Append the encoded URL as a query string parameter to the target URL
-        //     targetUrl += "/" + encodedUrl;
-
-            
-        // }
+                // Загрузка файла
+                await JSRuntime.InvokeVoidAsync("downloadFile", url);
+            }
+        }
+        catch(Exception ex){}
         
     }
 

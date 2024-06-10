@@ -103,78 +103,85 @@ namespace ACS_API.Controllers
         [HttpPost("CreateReportExcel")]
         public async Task<ActionResult> CreateReportExcel([FromBody]List<URV> listURV)
         {
-            DateTime Time = DateTime.Now;
-            //Create a Workbook object
-            Workbook wb = new Workbook();
-
-            //Remove default worksheets
-            wb.Worksheets.Clear();
-
-            //Add a worksheet and name it "Employee"
-            Worksheet sheet = wb.Worksheets.Add("Лист 1");
-
-            //Merge the cells between A1 and G1
-            sheet.Range["A1:F1"].Merge();
-
-            //Write data to A1 and apply formatting to it
-            sheet.Range["A1"].Value = $"Табель трудовой дисциплины на момент {Time}";
-            sheet.Range["A1"].HorizontalAlignment = HorizontalAlignType.Center;
-            sheet.Range["A1"].VerticalAlignment = VerticalAlignType.Center;
-            sheet.Range["A1"].Style.Font.IsBold = true;
-            sheet.Range["A1"].Style.Font.Size = 13F;
-            //Set row height of the first row
-            sheet.Rows[0].RowHeight = 30F;
-
-            //Create a DataTable
-            DataTable dt = new DataTable();
-            
-            dt.Columns.Add("Дата");
-            
-            dt.Columns.Add("ФИО");
-            
-            dt.Columns.Add("Должность");
-            
-            dt.Columns.Add("Начала\tфактических\tприсутствий");
-            
-            dt.Columns.Add("Окончания\nфактических\nприсутствий");
-            
-            dt.Columns.Add("Фактическая\nнаработка");
-            
-            // Создание строк
-            foreach(var urv in listURV)
+            try
             {
-                dt.Rows.Add(urv.Date.ToString("dd-MM-yyyy"), urv.FIO, urv.Position, urv.StartTime, urv.EndTime, urv.TotalTime);
+                DateTime Time = DateTime.Now;
+                //Create a Workbook object
+                Workbook wb = new Workbook();
+
+                //Remove default worksheets
+                wb.Worksheets.Clear();
+
+                //Add a worksheet and name it "Employee"
+                Worksheet sheet = wb.Worksheets.Add("Лист 1");
+
+                //Merge the cells between A1 and G1
+                sheet.Range["A1:F1"].Merge();
+
+                //Write data to A1 and apply formatting to it
+                sheet.Range["A1"].Value = $"Табель трудовой дисциплины на момент {Time}";
+                sheet.Range["A1"].HorizontalAlignment = HorizontalAlignType.Center;
+                sheet.Range["A1"].VerticalAlignment = VerticalAlignType.Center;
+                sheet.Range["A1"].Style.Font.IsBold = true;
+                sheet.Range["A1"].Style.Font.Size = 13F;
+                //Set row height of the first row
+                sheet.Rows[0].RowHeight = 30F;
+
+                //Create a DataTable
+                DataTable dt = new DataTable();
+
+                dt.Columns.Add("Дата");
+
+                dt.Columns.Add("ФИО");
+
+                dt.Columns.Add("Должность");
+
+                dt.Columns.Add("Начала\tфактических\tприсутствий");
+
+                dt.Columns.Add("Окончания\nфактических\nприсутствий");
+
+                dt.Columns.Add("Фактическая\nнаработка");
+
+                // Создание строк
+                foreach (var urv in listURV)
+                {
+                    dt.Rows.Add(urv.Date.ToString("dd-MM-yyyy"), urv.FIO, urv.Position, urv.StartTime, urv.EndTime, urv.TotalTime);
+                }
+
+                //Import data from DataTable to worksheet
+                sheet.InsertDataTable(dt, true, 2, 1, true);
+
+                //Set row height of a range
+                sheet.Range["A2:F7"].RowHeight = 15F;
+
+                //Set column width
+                sheet.Range["A2:F7"].Columns[2].ColumnWidth = 50F;
+                sheet.Range["A2"].ColumnWidth = 20F;
+                sheet.Range["B2"].ColumnWidth = 35F;
+                sheet.Range["C2"].ColumnWidth = 20F;
+
+                sheet.Range["D2"].ColumnWidth = 20F;
+
+                sheet.Range["E2"].ColumnWidth = 20F;
+
+                sheet.Range["F2"].ColumnWidth = 20F;
+
+                //Set border style of a range
+                sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderAround(LineStyleType.Medium); // жирная рамка вокруг
+                sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderInside(LineStyleType.Thin); // линии внутри
+                sheet.Range["A2:F2"].BorderAround(LineStyleType.Medium); // рамка вокруг наименований колонок
+                sheet.Range["A2:F7"].Borders.KnownColor = ExcelColors.Black;
+
+                //Save to a .xlsx file
+                string fileName = $"Табель трудовой дисциплины с {DateStart} по {DateEnd}";
+                wb.SaveToFile($"C:/Users/kokorin.av/source/repos/ACS/ACS_BlazorView/wwwroot/Учёты рабочего времени/Учёт рабочего времени.xlsx", FileFormat.Version2016);
+
+                return Ok();
             }
-
-            //Import data from DataTable to worksheet
-            sheet.InsertDataTable(dt, true, 2, 1, true);
-
-            //Set row height of a range
-            sheet.Range["A2:F7"].RowHeight = 15F;
-
-            //Set column width
-            sheet.Range["A2:F7"].Columns[2].ColumnWidth = 50F;
-            sheet.Range["A2"].ColumnWidth = 20F;
-            sheet.Range["B2"].ColumnWidth = 35F;
-            sheet.Range["C2"].ColumnWidth = 20F;
-
-            sheet.Range["D2"].ColumnWidth = 20F;
-
-            sheet.Range["E2"].ColumnWidth = 20F;
-
-            sheet.Range["F2"].ColumnWidth = 20F;
-
-            //Set border style of a range
-            sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderAround(LineStyleType.Medium); // жирная рамка вокруг
-            sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderInside(LineStyleType.Thin); // линии внутри
-            sheet.Range["A2:F2"].BorderAround(LineStyleType.Medium); // рамка вокруг наименований колонок
-            sheet.Range["A2:F7"].Borders.KnownColor = ExcelColors.Black;
-
-            //Save to a .xlsx file
-            string fileName = $"Табель трудовой дисциплины с {DateStart} по {DateEnd}";
-            wb.SaveToFile($"C:/Users/kokorin.av/source/repos/ACS/ACS_BlazorView/wwwroot/Учёты рабочего времени/Учёт рабочего времени.xlsx", FileFormat.Version2016);
-
-            return Ok();
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
