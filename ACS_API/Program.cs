@@ -179,13 +179,27 @@ namespace ACS_API
                         {
                             foreach (var sub in ListSub)
                             {
-                                await client.SendTextMessageAsync(
+                                if(offender.Position == "Водитель АБС")
+                                {
+                                    await client.SendTextMessageAsync(
                                 chatId: sub.ChatId,
-                                text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}");
-                                log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now };
-                                await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
-                                await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender); 
-                                Console.WriteLine(log.Title);
+                                text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\nПричина: нарушение регламента рабочего времени\n{offender.Time}");
+                                    log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now };
+                                    await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
+                                    await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender);
+                                    Console.WriteLine(log.Title);
+                                }
+                                else
+                                {
+                                    await client.SendTextMessageAsync(
+                                chatId: sub.ChatId,
+                                text: $"Нарушитель:\n{offender.Name}\n{offender.Position}\nПричина: попытка несанкционированного доступа\n{offender.Time}");
+                                    log = new Log() { Title = $"Пользователь: {sub.Name} {sub.Surname} {sub.Username} получил сообщение:\n\"Нарушитель:\n{offender.Name}\n{offender.Position}\n{offender.Time}\"", DateTime = DateTime.Now };
+                                    await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Logs/WriteLog", log);
+                                    await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender);
+                                    Console.WriteLine(log.Title);
+                                }
+                                
                             }
                             log = new Log() { Title = $"Уведомление отправлено {ListSub.Count()} подписчикам.", DateTime = DateTime.Now };
                             ListSub.Clear();

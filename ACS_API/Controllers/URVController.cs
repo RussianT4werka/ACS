@@ -60,7 +60,7 @@ namespace ACS_API.Controllers
 
                                 TimeSpan totalTime = end - start;
 
-                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
+                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
                                 ListURV.Add(urv);
                             }
                         }
@@ -84,7 +84,7 @@ namespace ACS_API.Controllers
 
                                     TimeSpan totalTime = end - start;
 
-                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = startTimePerson.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
+                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
                                     ListURV.Add(urv);
                                 }
                             }
@@ -108,30 +108,30 @@ namespace ACS_API.Controllers
                 var randomUrvForPeriod = listURV.FirstOrDefault();
 
                 DateTime Time = DateTime.Now;
-                //Create a Workbook object
+                //Создание рабочего пространства
                 Workbook wb = new Workbook();
 
-                //Remove default worksheets
+                //Удаление стандартного листа
                 wb.Worksheets.Clear();
 
-                //Add a worksheet and name it "Employee"
+                //Добавление кастомного листа "Лист 1"
                 Worksheet sheet = wb.Worksheets.Add("Лист 1");
 
-                //Merge the cells between A1 and G1
+                //Слияние ячекк от А1 до F1
                 sheet.Range["A1:F1"].Merge();
 
-                //Write data to A1 and apply formatting to it
+                //Заголовок таблицы в A1
                 sheet.Range["A1"].Value = $"Табель трудовой дисциплины на момент {Time}\nС: {randomUrvForPeriod.StartTime2.ToString("dd.MM.yyyy")} По: {randomUrvForPeriod.EndTime2.ToString("dd.MM.yyyy")}";
                 sheet.Range["A1"].HorizontalAlignment = HorizontalAlignType.Center;
                 sheet.Range["A1"].VerticalAlignment = VerticalAlignType.Center;
                 sheet.Range["A1"].Style.Font.IsBold = true;
                 sheet.Range["A1"].Style.Font.Size = 13F;
-                //Set row height of the first row
+                //Высота первой строки
                 sheet.Rows[0].RowHeight = 30F;
 
-                //Create a DataTable
+                //Создание таблицы
                 DataTable dt = new DataTable();
-
+                // Строка с заголовками
                 dt.Columns.Add("Дата");
 
                 dt.Columns.Add("ФИО");
@@ -153,10 +153,9 @@ namespace ACS_API.Controllers
                 //Import data from DataTable to worksheet
                 sheet.InsertDataTable(dt, true, 2, 1, true);
 
-                //Set row height of a range
+                //Настройка колонок/ячеек
                 sheet.Range["A2:F7"].RowHeight = 15F;
-
-                //Set column width
+                
                 sheet.Range["A2:F7"].Columns[2].ColumnWidth = 50F;
 
                 sheet.Range["A2"].ColumnWidth = 20F;
@@ -198,13 +197,13 @@ namespace ACS_API.Controllers
                 sheet.Range["F2"].Style.Font.IsBold = true;
                 sheet.Range["F2"].Style.Font.Size = 10F;
 
-                //Set border style of a range
+                //Рамки
                 sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderAround(LineStyleType.Medium); // жирная рамка вокруг
                 sheet.Range[$"A2:F{listURV.Count() + 2}"].BorderInside(LineStyleType.Thin); // линии внутри
                 sheet.Range["A2:F2"].BorderAround(LineStyleType.Medium); // рамка вокруг наименований колонок
                 sheet.Range["A2:F7"].Borders.KnownColor = ExcelColors.Black;
 
-                //Save to a .xlsx file
+                //Сохранение отчёта в формате .xlsx 
                 string fileName = $"Табель трудовой дисциплины с {DateStart} по {DateEnd}";
                 wb.SaveToFile($"C:/Users/kokorin.av/source/repos/ACS/ACS_BlazorView/wwwroot/Учёты рабочего времени/Учёт рабочего времени.xlsx", FileFormat.Version2016);
 

@@ -71,8 +71,9 @@
                     <th>Имя</th>
                     <th>Должность</th>
                     <th>W26</th>
-                    <th width=20%>Время</th>
-                    <th width=20%>Статус доклада о нарушении</th>
+                    <th width=13%>Время</th>
+                    <th>Причина</th>
+                    <th width=10%>Статус</th>
                 </tr>
             </thead>
 
@@ -87,6 +88,14 @@
                             <td>@offender.Position</td>
                             <td>@offender.W26</td>
                             <td>@offender.Time</td>
+                                @if (offender.Position == "Водитель АБС")
+                                {
+                                    <td>Нарушение регламента рабочего времени</td>
+                                }
+                                else
+                                {
+                                    <td>Попытка несанкционированного доступа</td>
+                                }
                             @if (offender.SendOrNot == 0)
                             {
                                 var s = Convert.ToString(offender.SendOrNot);
