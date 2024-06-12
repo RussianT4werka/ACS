@@ -116,7 +116,7 @@ namespace ACS_API.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }//'
 
         [HttpPost("SendOrNot")]
         public async Task<ActionResult<Offender>> SendOrNot(Offender offender)
