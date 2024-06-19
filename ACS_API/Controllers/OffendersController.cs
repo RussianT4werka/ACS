@@ -29,9 +29,12 @@ namespace ACS_API.Controllers
             {
                 if (_context.Offenders == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return null;
                 }
-                return await _context.Offenders.ToListAsync();
+                var offenders = await _context.Offenders.ToListAsync();
+                await _context.Database.CloseConnectionAsync();
+                return offenders;
             }
             catch(Exception ex)
             {
@@ -47,17 +50,22 @@ namespace ACS_API.Controllers
             {
                 if (_context.Offenders == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return null;
                 }
                 else
                 {
                     if (DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
                     {
-                        return await _context.Offenders.ToListAsync();
+                        var offenders = await _context.Offenders.ToListAsync();
+                        await _context.Database.CloseConnectionAsync();
+                        return offenders;
                     }
                     else
                     {
-                        return await _context.Offenders.Where( s => s.Time.Value.Day == DateFiltr.Day && s.Time.Value.Month == DateFiltr.Month && s.Time.Value.Year == DateFiltr.Year).ToListAsync();
+                        var offenders = await _context.Offenders.Where(s => s.Time.Value.Day == DateFiltr.Day && s.Time.Value.Month == DateFiltr.Month && s.Time.Value.Year == DateFiltr.Year).ToListAsync();
+                        await _context.Database.CloseConnectionAsync();
+                        return offenders;
                     }
                 }
             }
@@ -110,13 +118,14 @@ namespace ACS_API.Controllers
                 }
                 _context.Offenders.AddRange(newListOffender);
                 await _context.SaveChangesAsync();
+                await _context.Database.CloseConnectionAsync();
                 return null;
             }
             catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        }//'
+        }
 
         [HttpPost("SendOrNot")]
         public async Task<ActionResult<Offender>> SendOrNot(Offender offender)
@@ -126,7 +135,7 @@ namespace ACS_API.Controllers
                 offender.SendOrNot = (byte)1;
                 _context.Offenders.Update(offender);
                 await _context.SaveChangesAsync();
-
+                await _context.Database.CloseConnectionAsync();
                 return NoContent();
             }
             catch (Exception ex)

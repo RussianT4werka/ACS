@@ -28,9 +28,12 @@ namespace ACS_API.Controllers
             {
                 if (_context.SubscriberTelegramBots == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return NotFound();
                 }
-                return await _context.SubscriberTelegramBots.ToListAsync();
+                var subscriber = await _context.SubscriberTelegramBots.ToListAsync();
+                await _context.Database.CloseConnectionAsync();
+                return subscriber;
             }
             catch (Exception ex)
             {
@@ -45,7 +48,11 @@ namespace ACS_API.Controllers
             {
                 var sub = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == data.ChatId);
                 if (sub == null)
+                {
+                    await _context.Database.CloseConnectionAsync();
                     return NotFound();
+                }
+                    
                 if (sub.SubscribeOrNot == 0)
                 {
                     sub.SubscribeOrNot = 1;
@@ -56,7 +63,7 @@ namespace ACS_API.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-
+                await _context.Database.CloseConnectionAsync();
                 return NoContent();
             }
             catch (Exception ex)
@@ -78,9 +85,10 @@ namespace ACS_API.Controllers
 
                 if (subscriberTelegramBot == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return NotFound();
                 }
-
+                await _context.Database.CloseConnectionAsync();
                 return subscriberTelegramBot.SubscribeOrNot;
             }
             catch (Exception ex) 
@@ -100,7 +108,7 @@ namespace ACS_API.Controllers
                     return NotFound();
                 }
                 var subscriberTelegramBot = await _context.SubscriberTelegramBots.FirstOrDefaultAsync(s => s.ChatId == Convert.ToString(id));
-
+                await _context.Database.CloseConnectionAsync();
                 if (subscriberTelegramBot == null)
                 {
                     return 0;
@@ -121,6 +129,7 @@ namespace ACS_API.Controllers
             {
                 await _context.SubscriberTelegramBots.AddRangeAsync(sub);
                 await _context.SaveChangesAsync();
+                await _context.DisposeAsync();
             }
             catch (Exception ex)
             {
@@ -136,6 +145,7 @@ namespace ACS_API.Controllers
             {
                  _context.SubscriberTelegramBots.Remove(sub);
                 await _context.SaveChangesAsync();
+                await _context.DisposeAsync();
             }
             catch(Exception ex)
             {

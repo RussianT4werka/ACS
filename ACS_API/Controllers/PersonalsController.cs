@@ -34,11 +34,13 @@ namespace ACS_API.Controllers
                         return NotFound();
                     }
                     ListPersonal = await _context.Personals.ToListAsync();
+                    await _context.Database.CloseConnectionAsync();
                     return ListPersonal;
                 }
                 else if (adminOn == 1)
                 {
                     var admins = await _context.Admins.ToListAsync();
+                    await _context.Database.CloseConnectionAsync();
                     foreach(var newPers in admins)
                     {
                         string fio = $"{newPers.Surname} {newPers.Name} {newPers.Patronymic}";
@@ -76,6 +78,7 @@ namespace ACS_API.Controllers
                         editPers.W26 = personal.W26;
 
                         await _context.SaveChangesAsync();
+                        await _context.Database.CloseConnectionAsync();
                         return Ok();
                     }
                     catch
@@ -106,6 +109,7 @@ namespace ACS_API.Controllers
                         var Pers = new Personal() { Fio = personal.Fio, Department = personal.Department, Position = personal.Position, W26 = personal.W26 };
                         _context.Personals.Add(Pers);
                         await _context.SaveChangesAsync();
+                        await _context.Database.CloseConnectionAsync();
                         return Ok();
                     }
                     catch
@@ -136,6 +140,7 @@ namespace ACS_API.Controllers
                         var editPers = _context.Personals.FirstOrDefault(s => s.Id == personal.Id);
                         _context.Personals.Remove(editPers);
                         await _context.SaveChangesAsync();
+                        await _context.Database.CloseConnectionAsync();
                         return Ok();
                     }
                     catch(Exception ex)

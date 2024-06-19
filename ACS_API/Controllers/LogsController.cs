@@ -27,17 +27,22 @@ namespace ACS_API.Controllers
             {
                 if (_context.Logs == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return NotFound();
                 }
                 else
                 {
                     if (DateFiltr.Day == 01 && DateFiltr.Month == 01 && DateFiltr.Year == 0001 && DateFiltr.Hour == 0 && DateFiltr.Minute == 00 && DateFiltr.Second == 00)
                     {
-                        return await _context.Logs.ToListAsync();
+                        var logs = await _context.Logs.ToListAsync();
+                        await _context.Database.CloseConnectionAsync();
+                        return logs;
                     }
                     else
                     {
-                        return await _context.Logs.Where(s => s.DateTime.Date == DateFiltr.Date).ToListAsync();
+                        var logs = await _context.Logs.Where(s => s.DateTime.Date == DateFiltr.Date).ToListAsync();
+                        await _context.Database.CloseConnectionAsync();
+                        return logs;
                     }
                 }
                 
@@ -56,6 +61,7 @@ namespace ACS_API.Controllers
             {
                 _context.Logs.Add(log);
                 await _context.SaveChangesAsync();
+                await _context.Database.CloseConnectionAsync();
             }
             catch(Exception ex)
             { 
@@ -74,6 +80,7 @@ namespace ACS_API.Controllers
                     _context.Remove(log);
                 }
                 await _context.SaveChangesAsync();
+                await _context.Database.CloseConnectionAsync();
             }
             catch (Exception ex)
             {

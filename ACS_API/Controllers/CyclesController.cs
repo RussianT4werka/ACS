@@ -29,6 +29,7 @@ namespace ACS_API.Controllers
             {
                 if (_context.Cycles == null)
                 {
+                    await _context.Database.CloseConnectionAsync();
                     return NotFound();
                 }
                 else
@@ -145,6 +146,7 @@ namespace ACS_API.Controllers
 
                     }
                 }
+                await _context.Database.CloseConnectionAsync();
             }
             catch
             {

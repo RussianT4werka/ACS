@@ -58,6 +58,7 @@ namespace ACS_API.Controllers
                     {
                         var listEvent = await _context.Events.ToListAsync();
                         var filtrListEvent = listEvent.Where(s => Convert.ToDateTime(s.Time).Date == Convert.ToDateTime(DateFiltr).Date).ToList();
+                        await _context.Database.CloseConnectionAsync();
                         return filtrListEvent;
                     }
                 }
@@ -76,7 +77,9 @@ namespace ACS_API.Controllers
             {
                 if (id != null)
                 {
-                    return await _context.Events.FirstOrDefaultAsync(s => s.Id == id);
+                    var evenT = await _context.Events.FirstOrDefaultAsync(s => s.Id == id);
+                    await _context.Database.CloseConnectionAsync();
+                    return evenT;
                 }
                 else
                 {

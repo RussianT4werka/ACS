@@ -171,13 +171,13 @@ namespace ACS_API
 
                     foreach (var offender in ListOffendersNotSend)
                     {
-                        if(ListSub == null || ListSub.Count() == 0)
+                        if(ListSub == null || ListSub.Count() == 0) 
                         {
                             await httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/SendOrNot", offender); 
                         }
                         else
                         {
-                            foreach (var sub in ListSub)
+                            foreach (var sub in ListSub) // Что тут ????
                             {
                                 if(offender.Position == "Водитель АБС")
                                 {

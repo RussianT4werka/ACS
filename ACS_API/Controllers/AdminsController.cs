@@ -56,6 +56,7 @@ namespace ACS_API.Controllers
 
                 await _context.Admins.AddAsync(newAdmin);
                 await _context.SaveChangesAsync();
+                await _context.Database.CloseConnectionAsync();
                 await Mail.SendEmailAsync(user.Email, user.Login, user.Password);
                 return Ok(newAdmin.Id);
             }
@@ -76,6 +77,7 @@ namespace ACS_API.Controllers
                 else
                 {
                     var findUser = await _context.Admins.FirstOrDefaultAsync(s => s.Login == user.Login);
+                    await _context.Database.CloseConnectionAsync();
                     if (findUser == null)
                     {
                         return BadRequest("Логина не существует. Убедитесь в правильности введённого логина или свяжитесь с администратором.");
@@ -114,14 +116,19 @@ namespace ACS_API.Controllers
         {
             try
             {
-                var user = await _context.Admins.
-                    FirstOrDefaultAsync(s => s.Id == id);
+                var user = await _context.Admins.FirstOrDefaultAsync(s => s.Id == id);
+                await _context.Database.CloseConnectionAsync();
                 if (user == null)
+                {
                     return NotFound();
+                }
+                else
+                {
+                    UserData userDTO = new() {Id = user.Id, Name = user.Name, Surname = user.Surname, Patronymic = user.Patronymic,
+                                                Email = user.Email, Login = user.Login, Password = user.Password};
+                    return Ok(userDTO);
+                }
 
-                UserData userDTO = new() {Id = user.Id, Name = user.Name, Surname = user.Surname, Patronymic = user.Patronymic,
-                                            Email = user.Email, Login = user.Login, Password = user.Password};
-                return Ok(userDTO);
             }
             catch (Exception ex)
             {
@@ -147,6 +154,7 @@ namespace ACS_API.Controllers
                             user.Patronymic = userData.Patronymic;
                             user.Login = userData.Login;
                             _context.SaveChanges();
+                            await _context.Database.CloseConnectionAsync();
                             return Ok();
                         }
                         else
@@ -160,6 +168,7 @@ namespace ACS_API.Controllers
                                 string hashPassword = Hash.HashPassword(userData);
                                 user.Password = hashPass;
                                 _context.SaveChanges();
+                                await _context.Database.CloseConnectionAsync();
                                 return Ok();
                             }
                             else
