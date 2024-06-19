@@ -62,7 +62,7 @@ namespace ACS_API.Controllers
 
                                 TimeSpan totalTime = end - start;
 
-                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
+                                var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = DateEnd };
                                 ListURV.Add(urv);
                             }
                         }
@@ -87,7 +87,7 @@ namespace ACS_API.Controllers
 
                                     TimeSpan totalTime = end - start;
 
-                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = Convert.ToDateTime(endTime) };
+                                    var urv = new URV() { Date = Convert.ToDateTime(DateStart), FIO = startTimePerson.Fio, Position = person.Position, StartTime = startTime.TimeOfDay, EndTime = endTime.TimeOfDay, TotalTime = totalTime, StartTime2 = Convert.ToDateTime(dateStart), EndTime2 = DateEnd };
                                     ListURV.Add(urv);
                                 }
                             }
