@@ -85,7 +85,7 @@ namespace ACS_API.Controllers
                 var newListEvents = _context.Events.ToList().Where(s => s.PassOrDeny == "DENY" && s.SendOrNot == 0);
                 var deadLine = new TimeSpan(0, 15, 00);
                 var newListCycle = _context.Cycles.ToList().Where(s => s.Delta > deadLine && s.SendOrNot == 0);
-                if (newListEvents.Count() != 0 || newListEvents != null)
+                if (newListEvents.Count() != 0 && newListEvents != null)
                 {
                     foreach (var events in newListEvents)
                     {
@@ -101,6 +101,9 @@ namespace ACS_API.Controllers
                         newListOffender.Add(newOffender);
                         await _context.SaveChangesAsync();
                     }
+                }
+                else if(newListCycle != null && newListCycle.Count() != 0)
+                {
                     foreach (var cycle in newListCycle)
                     {
                         cycle.SendOrNot = 1;

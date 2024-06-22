@@ -75,7 +75,7 @@ namespace ACS_API.Controllers
                             foreach (var person in listPersoanl)
                             {
                                 var startTimePerson = _context.Events.ToList().FirstOrDefault(s => s.Fio == person.Fio && Convert.ToDateTime(s.Time).Date == DateStart.Date);
-                                var endTimePerson = _context.Events.ToList().LastOrDefault(s => s.Fio == person.Fio && Convert.ToDateTime(s.Time).Date <= DateEnd.Date);
+                                var endTimePerson = _context.Events.ToList().LastOrDefault(s => s.Fio == person.Fio && Convert.ToDateTime(s.Time).Date <= DateStart.Date);
                                 await _context.Database.CloseConnectionAsync();
                                 if (startTimePerson != null && endTimePerson != null)
                                 {

@@ -36,7 +36,8 @@ namespace ACS_API
                 ThrowPendingUpdates = true,
             };
             client.StartReceiving(UpdateM, Error, _receiverOptions);
-
+            var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Cycles/CreateCycle", "");
+            var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/CreateOffender", "");
             Thread timer = new Thread(Timer);
             timer.Start();
 
@@ -75,10 +76,11 @@ namespace ACS_API
 
         static void Timer()
         {
+            Thread.Sleep(5000);
             while (true)
             {
-                var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/CreateOffender","");
                 var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Cycles/CreateCycle", "");
+                var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/CreateOffender","");
                 UpdateM(BotClient, Update, Token);
                 Thread.Sleep(1000);
             }

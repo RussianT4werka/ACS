@@ -96,57 +96,64 @@ namespace ACS_API.Controllers
         {
             try
             {
-                var EventsP1 = await _context.Events.Where(s => s.PointId == 4 && s.Position != null && s.Position == "Водитель АБС").ToListAsync();
-                var EventsP2 = await _context.Events.Where(s => s.PointId == 8).ToListAsync();
+                var AllEvent = await _context.Events.ToListAsync();
+                
+                var EventsP1 = AllEvent.Where(s => s.PointId == 4 && s.Position != null && s.Position == "Водитель АБС").ToList();
+                var EventsP2 = AllEvent.Where(s => s.PointId == 8).ToList();
+
                 var Cycles = await _context.Cycles.Include(s => s.Event).ToListAsync();
-                foreach (var events in EventsP1)
+                await _context.Database.CloseConnectionAsync();
+                if (EventsP1 != null && EventsP1.Count() != 0)
                 {
-                    var cycleP2 = await _context.Cycles.FirstOrDefaultAsync(s => s.TimeP2 == null);
-                    if (events != null && cycleP2 == null)
+                    foreach (var events in EventsP1)
                     {
-                        var lastCycle = _context.Cycles.ToList().LastOrDefault();
-                        if (Cycles.Count() == 0)
+                        var cycleP2 = Cycles.FirstOrDefault(s => s.TimeP2 == null);
+                        if (events != null && cycleP2 == null)
                         {
-                            var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
-                            await _context.Cycles.AddAsync(newCycle);
-                            await _context.SaveChangesAsync();
-                            return Ok();
-                        }
-                        bool aa = Cycles.Any(s => s.EventId == events.Id);
-                        if (lastCycle.EventId != events.Id && aa == false)
-                        {
-                            var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
-                            await _context.Cycles.AddAsync(newCycle);
-                            await _context.SaveChangesAsync();
-                            return Ok();
-                        }
-                    }
-                    else
-                    {
-                        var ff = await _context.Cycles.FirstOrDefaultAsync(s => s.TimeP2 == null);
-
-                        if (ff != null)
-                        {
-                            foreach (var events2 in EventsP2.Where( s => s.W26 == ff.W26))
+                            var lastCycle = Cycles.ToList().LastOrDefault();
+                            if (Cycles.Count() == 0)
                             {
-                                bool gg = await _context.Cycles.AnyAsync(s => s.TimeP1 > Convert.ToDateTime(events2.Time));
-                                if (gg == false)
-                                {
-                                    foreach (var cycle in Cycles.Where(s => s.TimeP1 != null && s.TimeP2 == null && s.W26 == events2.W26))
-                                    {
-                                        cycle.TimeP2 = Convert.ToDateTime(events2.Time);
-                                        cycle.Delta = cycle.TimeP2 - cycle.TimeP1;
-                                        _context.Cycles.Update(cycle);
-                                        await _context.SaveChangesAsync();
-                                    }
-                                }
-
+                                var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
+                                await _context.Cycles.AddAsync(newCycle);
+                                await _context.SaveChangesAsync();
+                                await _context.Database.CloseConnectionAsync();
+                                return Ok();
+                            }
+                            bool aa = Cycles.Any(s => s.EventId == events.Id);
+                            if (lastCycle.EventId != events.Id && aa == false)
+                            {
+                                var newCycle = new Cycle() { EventId = events.Id, W26 = events.W26, TimeP1 = Convert.ToDateTime(events.Time) };
+                                await _context.Cycles.AddAsync(newCycle);
+                                await _context.SaveChangesAsync();
+                                await _context.Database.CloseConnectionAsync();
+                                return Ok();
                             }
                         }
+                        else if(cycleP2.TimeP1 < Convert.ToDateTime(EventsP2.ToList().LastOrDefault().Time))
+                        {
+                            if (cycleP2 != null)
+                            {
+                                foreach (var events2 in EventsP2.Where(s => s.W26 == cycleP2.W26))
+                                {
+                                    bool gg = Cycles.Any(s => s.TimeP1 > Convert.ToDateTime(events2.Time));
+                                    if (gg == false)
+                                    {
+                                        foreach (var cycle in Cycles.Where(s => s.TimeP1 != null && s.TimeP2 == null && s.W26 == events2.W26))
+                                        {
+                                            cycle.TimeP2 = Convert.ToDateTime(events2.Time);
+                                            cycle.Delta = cycle.TimeP2 - cycle.TimeP1;
+                                            _context.Cycles.Update(cycle);
+                                            await _context.SaveChangesAsync();
+                                            await _context.Database.CloseConnectionAsync();
+                                        }
+                                    }
 
+                                }
+                            }
+
+                        }
                     }
                 }
-                await _context.Database.CloseConnectionAsync();
             }
             catch
             {
