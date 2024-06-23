@@ -79,6 +79,7 @@ namespace ACS_API
             Thread.Sleep(5000);
             while (true)
             {
+                GC.Collect(2, GCCollectionMode.Forced);
                 var createCycle = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Cycles/CreateCycle", "");
                 var createOffender = httpClient.PostAsJsonAsync("http://10.10.1.102:7123/api/Offenders/CreateOffender","");
                 UpdateM(BotClient, Update, Token);
