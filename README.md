@@ -12,36 +12,41 @@ https://docs.google.com/presentation/d/1xJlsz7X8E2QLdBNPdxzcL-3QLAbdHnaSHH_l6Hue
 
 Страницы с функциями web-интерфейса:
 1) Страница входа
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/93aaccee-82fd-48e0-89b9-374a88262f52)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/e99337b1-c746-4e1b-8761-7aff2ed55739)
 2) Страница данных об аккаунте
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/7b43c611-caab-4f84-adf9-ca991eca7879)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/0517107b-7b9f-4b65-93d7-b7ac1ee1ce01)
 4) Страница вывода персонала завода/администраторов web-интерфейса
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/5f499ee1-10a2-43e5-b030-a9647426c140)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/c1c1d755-0378-4281-bc0c-fa594d5c19ac)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/a4010d94-a0a1-41bc-b7b4-b9eb1cc17543)
 5) Страница редактирования персонала
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/ff05e3e9-e5fd-44d5-bf91-d257bbe4c55d)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/0ca4dc20-57b6-42d2-97cb-1f87027eac3d)
 7) Страница добавления персонала
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/ec62cac3-fe39-4619-a27b-21db30f73f9f)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/b27cad69-b7bd-4171-a389-7dc833bc3388)
 8) Страница регистрации администратора
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/35389938-590f-4af4-90c6-c768fea12a5c)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/078411c4-2c3e-4371-befb-d5965b376ae4)
 9) Страница видеонаблюдения
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/f090457b-bbce-47d7-a0fe-a940bbe3a5dd)
-10) Страница вывода списка потоков
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/639ab8e8-0d8f-4d1b-9d61-e2becaa6add4)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/9617b29e-0f64-4007-ae35-838e7aea8af4)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/cc84dd69-6163-4edc-9fd3-812353cb3010)
+10) Страница вывода списка потоков(для удаления/редактирования)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/34cc8c8b-26de-4d00-bc69-93eab58c1fb9)
 11) Страница редактирования потока
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/2b96bd3d-41d1-4335-8fba-9976d4cb5c7a)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/9c718305-3de0-41c4-a68a-d06507ccd936)
 12) Страница вывода списка событий на объекте
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/6a89c742-3f5b-4f00-b8be-56fb32e92e3e)
-13) Страница вывода циклов (автоматизация подсчёта времени нахождения АБС на территории завода)
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/3f69a892-c918-4a39-aa82-99354841f0ad)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/2d235f98-1b37-445b-a1c2-ee96cbcd6348)
+13) Страница вывода циклов (автоматизация подсчёта общего времени нахождения АБС на территории завода во время загрузки)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/86066e29-206e-4e36-86d3-41c8d4b485a5)
 14) Страница вывода списка нарушитетей
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/aa2382ca-dc53-4809-ba22-944c3efe54b5)
-15) Для уведомлений о нарушениях был разработал телеграм-БОТ (@ACaMS_BOT). Вот страница со списком его подписчиков с возможность, включения/отключения уведомлений у определённых людей
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/530e1715-b25c-45a9-af2d-b3b896107770)
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/3e8d1f17-75f9-4ccd-992e-82aeae4af0a7)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/b51c549f-faf8-4d56-8f80-682e0fcb35aa)
+15) Страница УРВ(Учёт рабочего времени). На этой странице высталвяется с какого по какое число будет сформирован отчёт о том сколько работники завода провели времени на работе за сутки. Имеется возможность экспорта отчёта в Excel, для последующей передачи его бухгалтеру для более удобного расчёта заработной платы сотрудникам. В отчёт входят весь персонал занесённый в ПО Sigur, кроме водителей АБС.
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/cc3dc5c6-fc6c-4906-8e51-51f1c675866d)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/a42bd25b-3169-44b6-b0f1-d8a0b69202c0)
+16) Для уведомлений о нарушениях был разработал телеграм-БОТ (@ACaMS_BOT). Вот страница со списком его подписчиков с возможность, включения/отключения уведомлений у определённых людей
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/b197bcc6-3055-4c93-bf5b-5b3d964ee567)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/5af3eeaa-98fc-49f2-b159-15b6041683a2)
 17) Страница с выводом списка логов телеграм-БОТа
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/4a3c9753-bf5f-4692-ae1e-b06363a59c7b)
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/8571fabc-a23e-4ec8-ae68-9f55280a376b)
 18) Кстати при регистрации нового администратора, ему на эл. почту приходит уведомление с данными для входа и ссылкой на web-интерфейс
+![image](https://github.com/RussianT4werka/ACS/assets/93105377/5225ef90-4e38-41d0-b48e-a1d5ff902d32)
 
-![image](https://github.com/RussianT4werka/ACS/assets/93105377/db82caad-295e-4006-bec4-1547daf083be)
 
 
